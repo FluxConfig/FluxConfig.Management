@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Dapper" Version="2.1.66" />
+      <PackageReference Include="FluentMigrator" Version="7.1.0" />
+      <PackageReference Include="FluentMigrator.Runner" Version="7.1.0" />
+      <PackageReference Include="FluentMigrator.Runner.Postgres" Version="7.1.0" />
+      <PackageReference Include="Google.Protobuf" Version="3.30.2" />
+      <PackageReference Include="Grpc.Net.Client" Version="2.70.0" />
+      <PackageReference Include="Grpc.Net.ClientFactory" Version="2.70.0" />
+      <PackageReference Include="Grpc.StatusProto" Version="2.70.0" />
+      <PackageReference Include="Grpc.Tools" Version="2.71.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.3" />
+      <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.3" />
+      <PackageReference Include="Npgsql" Version="9.0.3" />
+      <PackageReference Include="Npgsql.DependencyInjection" Version="9.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="..\Protos\fluxconfig-storage.proto" GrpcServices="Client"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\FluxConfig.Management.Domain\FluxConfig.Management.Domain.csproj" />
+    </ItemGroup>
+
+</Project>

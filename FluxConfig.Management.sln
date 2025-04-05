@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxConfig.Management.Api", "src\FluxConfig.Management.Api\FluxConfig.Management.Api.csproj", "{D1D79AE5-46E1-4418-A78B-DEA6511519D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxConfig.Management.Domain", "src\FluxConfig.Management.Domain\FluxConfig.Management.Domain.csproj", "{5C697FA2-0CCC-4872-9D0E-BEC8C33BAE7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxConfig.Management.Infrastructure", "src\FluxConfig.Management.Infrastructure\FluxConfig.Management.Infrastructure.csproj", "{BC1D6DF5-99F4-4812-B686-038BF0C1B996}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D1D79AE5-46E1-4418-A78B-DEA6511519D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1D79AE5-46E1-4418-A78B-DEA6511519D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1D79AE5-46E1-4418-A78B-DEA6511519D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1D79AE5-46E1-4418-A78B-DEA6511519D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C697FA2-0CCC-4872-9D0E-BEC8C33BAE7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C697FA2-0CCC-4872-9D0E-BEC8C33BAE7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C697FA2-0CCC-4872-9D0E-BEC8C33BAE7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C697FA2-0CCC-4872-9D0E-BEC8C33BAE7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC1D6DF5-99F4-4812-B686-038BF0C1B996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC1D6DF5-99F4-4812-B686-038BF0C1B996}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC1D6DF5-99F4-4812-B686-038BF0C1B996}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC1D6DF5-99F4-4812-B686-038BF0C1B996}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
