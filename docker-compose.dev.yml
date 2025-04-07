@@ -34,9 +34,13 @@ services:
       POSTGRES_DB: ${PG_DB}
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PSWD}
-      PGDATA: /var/lib/postgresql/data/pgdata
+      PG_FCM_APP_USER: ${PG_FCM_APP_USER}
+      PG_FCM_APP_PSWD: ${PG_FCM_APP_PSWD}
+      PG_MIGRATION_USER: ${PG_MIGRATION_USER}
+      PG_MIGRATION_PSWD: ${PG_MIGRATION_PSWD}
     volumes:
-      - fcm-pg-data:/var/lib/postgresql/data/pgdata
+      - fcm-pg-data:/var/lib/postgresql/data
+      - ./postgres-init-dev:/docker-entrypoint-initdb.d
     networks:
       - fcm-network
     ports:
@@ -45,7 +49,6 @@ services:
         
 volumes:
   fcm-pg-data:
-    driver: local
 
 networks:
   fcm-network:
