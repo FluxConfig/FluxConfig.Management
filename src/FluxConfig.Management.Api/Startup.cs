@@ -4,6 +4,7 @@ using FluxConfig.Management.Api.FiltersAttributes;
 using FluxConfig.Management.Api.FiltersAttributes.Auth;
 using FluxConfig.Management.Api.Middleware;
 using FluxConfig.Management.Domain.DependencyInjection.Extensions;
+using FluxConfig.Management.Infrastructure.DependencyInjection.Extensions;
 
 namespace FluxConfig.Management.Api;
 
@@ -21,8 +22,13 @@ public sealed class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
-            .AddDomainServices()
             .AddGlobalFilters()
+            .AddDalInfrastructure(
+                configuration: _configuration,
+                isDevelopment: _hostEnvironment.IsDevelopment()
+            )
+            .AddDalRepositories()
+            .AddDomainServices()
             .AddControllers()
             .AddJsonOptions(options =>
             {
@@ -34,7 +40,7 @@ public sealed class Startup
                 options.Filters.Add<ApiKeyAuthFilter>();
             });
     }
-    
+
     public void Configure(IApplicationBuilder app)
     {
         app.UseMiddleware<TracingMiddleware>();
@@ -42,7 +48,7 @@ public sealed class Startup
         app.UseRouting();
 
         app.UseMiddleware<LoggingMiddleware>();
-        
+
         //TODO: Добавить корс для веб клиента
         app.UseCors();
 
@@ -51,5 +57,4 @@ public sealed class Startup
             endpointBuilder.MapControllers();
         });
     }
-
 }

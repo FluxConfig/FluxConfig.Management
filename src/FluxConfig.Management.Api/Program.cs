@@ -1,4 +1,5 @@
 using System.Net;
+using FluxConfig.Management.Infrastructure.DependencyInjection.Extensions;
 
 namespace FluxConfig.Management.Api;
 
@@ -19,6 +20,7 @@ public sealed class Program
 
         await hostBuilder
             .Build()
+            .MigrateUp()
             .RunAsync();
     }
 }
