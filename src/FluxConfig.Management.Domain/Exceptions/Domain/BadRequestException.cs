@@ -4,7 +4,10 @@ namespace FluxConfig.Management.Domain.Exceptions.Domain;
 
 public class BadRequestException: DomainException
 {
-    public BadRequestException(string? message, ValidationException? innerException) : base(message, innerException)
+    public ValidationException ValidationException { get; init; } 
+    
+    public BadRequestException(string? message, ValidationException innerException) : base(message, innerException)
     {
+        ValidationException = innerException;
     }
 }

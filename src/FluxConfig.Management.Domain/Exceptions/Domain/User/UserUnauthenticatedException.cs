@@ -2,15 +2,9 @@ namespace FluxConfig.Management.Domain.Exceptions.Domain.User;
 
 public class UserUnauthenticatedException: DomainException
 {
-    public UserUnauthenticatedException()
+    public string Reason { get; init; }
+    public UserUnauthenticatedException(string? message, string reason,  Exception? innerException) : base(message, innerException)
     {
-    }
-
-    public UserUnauthenticatedException(string? message) : base(message)
-    {
-    }
-
-    public UserUnauthenticatedException(string? message, Exception? innerException) : base(message, innerException)
-    {
+        Reason = reason;
     }
 }

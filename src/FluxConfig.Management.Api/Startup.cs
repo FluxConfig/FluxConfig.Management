@@ -1,6 +1,7 @@
-using System.Net;
 using System.Text.Json;
+using FluxConfig.Management.Api.Extensions;
 using FluxConfig.Management.Api.FiltersAttributes;
+using FluxConfig.Management.Api.Middleware;
 using FluxConfig.Management.Domain.DependencyInjection.Extensions;
 
 namespace FluxConfig.Management.Api;
@@ -20,6 +21,7 @@ public sealed class Startup
     {
         services
             .AddDomainServices()
+            .AddGlobalFilters()
             .AddControllers()
             .AddJsonOptions(options =>
             {
@@ -27,19 +29,18 @@ public sealed class Startup
             })
             .AddMvcOptions(options =>
             {
-                //TODO: Добавить ExceptionFilter с версионированным логированием и маппингом в еррор респонс
-                // в логировании наебенить трейсинг запросов
-                options.Filters.Add(new ErrorResponseTypeAttribute((int)HttpStatusCode.NotFound));
-                options.Filters.Add(new ErrorResponseTypeAttribute((int)HttpStatusCode.BadRequest));
+                options.Filters.Add<ExceptionFilter>();
             });
     }
     
     public void Configure(IApplicationBuilder app)
     {
+        app.UseMiddleware<TracingMiddleware>();
         app.UsePathBase("/api/fcm");
         app.UseRouting();
 
-        //TODO: Добавить мидлвар логирования с трейсингом
+        app.UseMiddleware<LoggingMiddleware>();
+        
         //TODO: Добавить корс для веб клиента
         app.UseCors();
 

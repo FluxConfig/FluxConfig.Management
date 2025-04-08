@@ -11,4 +11,8 @@
       <ProjectReference Include="..\FluxConfig.Management.Infrastructure\FluxConfig.Management.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="FiltersAttributes\Auth\" />
+    </ItemGroup>
+
 </Project>

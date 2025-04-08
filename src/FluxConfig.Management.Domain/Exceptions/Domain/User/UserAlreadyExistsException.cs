@@ -4,15 +4,10 @@ namespace FluxConfig.Management.Domain.Exceptions.Domain.User;
 
 public class UserAlreadyExistsException: DomainException
 {
-    public UserAlreadyExistsException()
-    {
-    }
+    public string Email { get; init; }
 
-    public UserAlreadyExistsException(string? message) : base(message)
+    public UserAlreadyExistsException(string? message, string email, EntityAlreadyExistsException? innerException) : base(message, innerException)
     {
-    }
-
-    public UserAlreadyExistsException(string? message, EntityAlreadyExistsException? innerException) : base(message, innerException)
-    {
+        Email = email;
     }
 }

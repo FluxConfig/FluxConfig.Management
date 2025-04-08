@@ -4,15 +4,16 @@ namespace FluxConfig.Management.Domain.Exceptions.Domain.User;
 
 public class UserNotFoundException: DomainException
 {
-    public UserNotFoundException()
+    public long Id { get; init; } = -1;
+    public string? InvalidEmail { get; init; }
+    public UserNotFoundException(string? message, string? invalidEmail,  EntityNotFoundException? innerException) : base(message, innerException)
     {
+        InvalidEmail = invalidEmail;
     }
-
-    public UserNotFoundException(string? message) : base(message)
+    
+    public UserNotFoundException(string? message, string? invalidEmail, long id,  EntityNotFoundException? innerException) : base(message, innerException)
     {
-    }
-
-    public UserNotFoundException(string? message, EntityNotFoundException? innerException) : base(message, innerException)
-    {
+        InvalidEmail = invalidEmail;
+        Id = id;
     }
 }
