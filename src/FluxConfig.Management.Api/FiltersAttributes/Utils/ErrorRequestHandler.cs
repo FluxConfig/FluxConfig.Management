@@ -4,6 +4,7 @@ using FluentValidation.Results;
 using FluxConfig.Management.Api.Contracts.Responses;
 using FluxConfig.Management.Domain.Exceptions.Domain;
 using FluxConfig.Management.Domain.Exceptions.Domain.User;
+using FluxConfig.Management.Domain.Exceptions.Infrastructure.ISC;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -109,6 +110,28 @@ internal static class ErrorRequestHandler
                 StatusCode: HttpStatusCode.Unauthorized,
                 Message: $"Unauthorized to access resource. {ex.Reason}",
                 Exceptions: []
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.Unauthorized
+        };
+
+        context.Result = result;
+    }
+
+    #endregion
+
+    #region Internal auth
+
+    internal static void HandleInternalApiKeyUnauthenticated(AuthorizationFilterContext context,
+        InternalApiKeyUnauthenticatedException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.Unauthorized,
+                Message: $"Invalid internal authentication metadata provided. X-API-KEY: {ex.InvalidApiKey}",
+                Exceptions: [ex.InvalidApiKey]
             )
         )
         {

@@ -109,14 +109,13 @@ internal static partial class LoggerExtensions
     
     
     
-    // TODO: Не забыть добавить
     [LoggerMessage(
         Level = LogLevel.Error,
         EventId = 4021,
         Message =
             "[{CallId}] [{CurTime}] Given invalid internal api-key authentication metadata needed to access FC Management api. X-API-KEY: {ApiKey}"
     )]
-    public static partial void LogInternalServiceIncomingAuthError(this ILogger logger,
+    public static partial void LogInternalApiKeyAuthError(this ILogger logger,
         string callId,
         DateTime curTime,
         string apiKey);

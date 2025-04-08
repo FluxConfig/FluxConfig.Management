@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluxConfig.Management.Api.Extensions;
 using FluxConfig.Management.Api.FiltersAttributes;
+using FluxConfig.Management.Api.FiltersAttributes.Auth;
 using FluxConfig.Management.Api.Middleware;
 using FluxConfig.Management.Domain.DependencyInjection.Extensions;
 
@@ -30,6 +31,7 @@ public sealed class Startup
             .AddMvcOptions(options =>
             {
                 options.Filters.Add<ExceptionFilter>();
+                options.Filters.Add<ApiKeyAuthFilter>();
             });
     }
     
