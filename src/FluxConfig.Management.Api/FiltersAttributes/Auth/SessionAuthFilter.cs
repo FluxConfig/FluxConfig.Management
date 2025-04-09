@@ -1,0 +1,71 @@
+using FluxConfig.Management.Api.Extensions;
+using FluxConfig.Management.Api.FiltersAttributes.Utils;
+using FluxConfig.Management.Domain.Exceptions.Domain.User;
+using FluxConfig.Management.Domain.Models.Auth;
+using FluxConfig.Management.Domain.Models.Enums;
+using FluxConfig.Management.Domain.Models.User;
+using FluxConfig.Management.Domain.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc.Filters;
+
+namespace FluxConfig.Management.Api.FiltersAttributes.Auth;
+
+public class SessionAuthFilter : IAsyncAuthorizationFilter
+{
+    private readonly IUserCredentialsService _credentialsService;
+    private readonly ILogger<SessionAuthFilter> _logger;
+    private readonly UserGlobalRole _requiredRole;
+
+    public SessionAuthFilter(
+        IUserCredentialsService userCredentialsService,
+        ILogger<SessionAuthFilter> logger,
+        UserGlobalRole requiredRole = UserGlobalRole.Member)
+    {
+        _credentialsService = userCredentialsService;
+        _logger = logger;
+        _requiredRole = requiredRole;
+    }
+
+    public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
+    {
+        var cancellationToken = context.HttpContext.RequestAborted;
+
+        try
+        {
+            UserModel user = await _credentialsService.UserCheckAuth(
+                sessionId: context.HttpContext.Request.Cookies[SessionModel.SessionCookieKey],
+                cancellationToken: cancellationToken
+            );
+
+            if (user.Roles.Max() < _requiredRole)
+            {
+                throw new UserUnauthenticatedException(
+                    message: $"Dont have enough permissions to access resource. Required role: {_requiredRole.ToString()}",
+                    reason: $"Dont have enough permissions to access resource. Required role: {_requiredRole.ToString()}"
+                );
+            }
+        }
+        catch (UserUnauthenticatedException ex)
+        {
+            _logger.LogUserUnauthenticatedError(
+                callId: context.HttpContext.TraceIdentifier,
+                curTime: DateTime.Now,
+                reason: ex.Reason
+            );
+
+            ErrorRequestHandler.HandleUserUnauthorizedRequest(
+                context: context,
+                ex: ex
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogInternalError(
+                callId: context.HttpContext.TraceIdentifier,
+                curTime: DateTime.Now,
+                exception: ex
+            );
+
+            ErrorRequestHandler.HandleInternalError(context);
+        }
+    }
+}

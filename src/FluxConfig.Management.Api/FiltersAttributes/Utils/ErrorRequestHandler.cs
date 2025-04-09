@@ -31,23 +31,6 @@ internal static class ErrorRequestHandler
         context.Result = result;
     }
     
-    internal static void HandleUserNotFoundRequest(AuthorizationFilterContext context, UserNotFoundException ex)
-    {
-        JsonResult result = new JsonResult(
-            new ErrorResponse(
-                StatusCode: HttpStatusCode.NotFound,
-                Message: $"User with email: {ex.InvalidEmail} {(ex.Id == -1 ? "" :  $", ID: {ex.Id}")} not found",
-                Exceptions: [ex.InvalidEmail ?? ""]
-            )
-        )
-        {
-            ContentType = "application/json",
-            StatusCode = (int)HttpStatusCode.NotFound
-        };
-
-        context.Result = result;
-    }
-    
     internal  static void HandleUserConflictRequest(ExceptionContext context, UserAlreadyExistsException ex)
     {
         JsonResult result = new JsonResult(
@@ -71,7 +54,7 @@ internal static class ErrorRequestHandler
             new ErrorResponse(
                 StatusCode: HttpStatusCode.BadRequest,
                 Message: "Invalid credentials provided.",
-                Exceptions: []
+                Exceptions: [ex.InvalidPassword ?? ""]
             )
         )
         {

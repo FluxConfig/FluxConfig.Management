@@ -48,8 +48,14 @@ public class ApiKeyAuthFilter : IAuthorizationFilter
 
             ErrorRequestHandler.HandleInternalApiKeyUnauthenticated(context, ex);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogInternalError(
+                curTime: DateTime.Now,
+                callId: context.HttpContext.TraceIdentifier,
+                exception: ex
+            );
+            
             ErrorRequestHandler.HandleInternalError(context);
         }
     }
