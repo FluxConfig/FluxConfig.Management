@@ -19,7 +19,7 @@ services:
     networks:
       - fcm-network
     ports:
-      - ${MANAGEMENT_API_PORT}:8080
+      - ${MANAGEMENT_API_PORT}:7070
     depends_on:
       - database
     

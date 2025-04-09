@@ -24,6 +24,9 @@ public sealed class Startup
     {
         services
             .AddGlobalFilters()
+            .AddCustomCors(
+                configuration: _configuration,
+                isDevelopment: _hostEnvironment.IsDevelopment())
             .AddDalInfrastructure(
                 configuration: _configuration,
                 isDevelopment: _hostEnvironment.IsDevelopment()
@@ -50,8 +53,7 @@ public sealed class Startup
         app.UseRouting();
 
         app.UseMiddleware<LoggingMiddleware>();
-
-        //TODO: Добавить корс для веб клиента
+        
         app.UseCors();
 
         app.UseEndpoints(endpointBuilder =>
