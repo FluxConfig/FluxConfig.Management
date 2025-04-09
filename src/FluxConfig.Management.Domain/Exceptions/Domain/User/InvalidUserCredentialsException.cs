@@ -5,7 +5,7 @@ public class InvalidUserCredentialsException: DomainException
     public string Email { get; init; }
     public string? InvalidPassword { get; init; }
 
-    public InvalidUserCredentialsException(string? message, string email, string? invalidPassword, Exception? innerException) : base(message, innerException)
+    public InvalidUserCredentialsException(string? message, string email, string? invalidPassword) : base(message)
     {
         Email = email;
         InvalidPassword = invalidPassword;

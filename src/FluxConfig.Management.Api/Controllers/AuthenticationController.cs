@@ -4,6 +4,7 @@ using FluxConfig.Management.Api.Contracts.Responses.Auth;
 using FluxConfig.Management.Api.Mappers.Models;
 using FluxConfig.Management.Api.Mappers.Requests;
 using FluxConfig.Management.Domain.Models.Auth;
+using FluxConfig.Management.Domain.Models.User;
 using FluxConfig.Management.Domain.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,16 +49,16 @@ public class AuthenticationController : ControllerBase
         );
 
         Response.Cookies.Append(
-            key: SetCookieModel.CookieKey,
-            value: setCookieModel.SessionId,
+            key: SessionModel.SessionCookieKey,
+            value: setCookieModel.Session.Id,
             options: new CookieOptions
             {
-                Expires = setCookieModel.ExpirationDate,
+                Expires = setCookieModel.Session.ExpirationDate,
                 IsEssential = true,
                 Domain = Request.Host.Host
             });
 
-        return Ok(setCookieModel.MapModelToLoginResponse());
+        return Ok(setCookieModel.MapModelToResponse());
     }
 
     [HttpGet]
@@ -67,12 +68,12 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType<ErrorResponse>(404)]
     public async Task<IActionResult> UserCheckAuth(CancellationToken cancellationToken)
     {
-        SetCookieModel setCookieModel = await _userCredentialsService.UserCheckAuth(
-            sessionId: HttpContext.Request.Cookies[SetCookieModel.CookieKey],
+        UserModel userModel = await _userCredentialsService.UserCheckAuth(
+            sessionId: HttpContext.Request.Cookies[SessionModel.SessionCookieKey],
             cancellationToken: cancellationToken
         );
 
-        return Ok(setCookieModel.MapModelToCheckAuthResponse());
+        return Ok(userModel.MapModelToResponse());
     }
 
     [HttpDelete]
@@ -81,12 +82,12 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> UserLogout(CancellationToken cancellationToken)
     {
         await _userCredentialsService.LogoutUser(
-            sessionId: HttpContext.Request.Cookies[SetCookieModel.CookieKey] ?? "",
+            sessionId: HttpContext.Request.Cookies[SessionModel.SessionCookieKey] ?? "",
             cancellationToken: cancellationToken
         );
 
         Response.Cookies.Delete(
-            key: SetCookieModel.CookieKey,
+            key: SessionModel.SessionCookieKey,
             options: new CookieOptions
             {
                 IsEssential = true,

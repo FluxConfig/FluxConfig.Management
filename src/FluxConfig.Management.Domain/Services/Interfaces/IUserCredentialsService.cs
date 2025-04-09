@@ -1,4 +1,5 @@
 using FluxConfig.Management.Domain.Models.Auth;
+using FluxConfig.Management.Domain.Models.User;
 
 namespace FluxConfig.Management.Domain.Services.Interfaces;
 
@@ -10,5 +11,5 @@ public interface IUserCredentialsService
 
     public Task LogoutUser(string sessionId, CancellationToken cancellationToken);
 
-    public Task<SetCookieModel> UserCheckAuth(string? sessionId, CancellationToken cancellationToken);
+    public Task<UserModel> UserCheckAuth(string? sessionId, CancellationToken cancellationToken);
 }

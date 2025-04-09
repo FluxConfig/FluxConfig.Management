@@ -1,15 +1,8 @@
-using FluxConfig.Management.Domain.Models.Enums;
+using FluxConfig.Management.Domain.Models.User;
 
 namespace FluxConfig.Management.Domain.Models.Auth;
 
 public record SetCookieModel(
-    long Id,
-    string Username,
-    string Email,
-    string SessionId,
-    DateTimeOffset ExpirationDate,
-    IReadOnlyList<UserGlobalRole> Roles
-)
-{
-    public const string CookieKey = "fcm-session-id";
-};
+    UserModel User,
+    SessionModel Session
+);

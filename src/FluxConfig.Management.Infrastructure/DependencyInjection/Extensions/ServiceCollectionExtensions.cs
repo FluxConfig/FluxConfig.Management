@@ -1,6 +1,8 @@
+using FluxConfig.Management.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Management.Infrastructure.Configuration;
 using FluxConfig.Management.Infrastructure.Configuration.Options.Enums;
 using FluxConfig.Management.Infrastructure.Dal.Infrastructure;
+using FluxConfig.Management.Infrastructure.Dal.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,6 +38,8 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddDalRepositories(this IServiceCollection services)
     {
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ISessionsRepository, SessionsRepository>();
         return services;
     }
 }

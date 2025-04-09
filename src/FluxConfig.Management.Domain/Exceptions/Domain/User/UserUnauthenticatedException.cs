@@ -7,4 +7,9 @@ public class UserUnauthenticatedException: DomainException
     {
         Reason = reason;
     }
+    
+    public UserUnauthenticatedException(string? message, string reason) : base(message)
+    {
+        Reason = reason;
+    }
 }
