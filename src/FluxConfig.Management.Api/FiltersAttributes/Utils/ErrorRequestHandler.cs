@@ -20,7 +20,7 @@ internal static class ErrorRequestHandler
             new ErrorResponse(
                 StatusCode: HttpStatusCode.NotFound,
                 Message: $"User with email: {ex.InvalidEmail} {(ex.Id == -1 ? "" :  $", ID: {ex.Id}")} not found",
-                Exceptions: []
+                Exceptions: [ex.InvalidEmail ?? ""]
             )
         )
         {
@@ -37,7 +37,7 @@ internal static class ErrorRequestHandler
             new ErrorResponse(
                 StatusCode: HttpStatusCode.NotFound,
                 Message: $"User with email: {ex.InvalidEmail} {(ex.Id == -1 ? "" :  $", ID: {ex.Id}")} not found",
-                Exceptions: []
+                Exceptions: [ex.InvalidEmail ?? ""]
             )
         )
         {
@@ -53,8 +53,8 @@ internal static class ErrorRequestHandler
         JsonResult result = new JsonResult(
             new ErrorResponse(
                 StatusCode: HttpStatusCode.Conflict,
-                Message: $"User with such email: {ex.Email} already exists",
-                Exceptions: []
+                Message: $"User with email: {ex.Email} already exists",
+                Exceptions: [ex.Email]
             )
         )
         {
@@ -92,7 +92,7 @@ internal static class ErrorRequestHandler
             new ErrorResponse(
                 StatusCode: HttpStatusCode.Unauthorized,
                 Message: $"Unauthorized to access resource. {ex.Reason}",
-                Exceptions: []
+                Exceptions: [ex.Reason]
             )
         )
         {
@@ -109,7 +109,7 @@ internal static class ErrorRequestHandler
             new ErrorResponse(
                 StatusCode: HttpStatusCode.Unauthorized,
                 Message: $"Unauthorized to access resource. {ex.Reason}",
-                Exceptions: []
+                Exceptions: [ex.Reason]
             )
         )
         {

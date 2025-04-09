@@ -65,13 +65,16 @@ public class UserCredentialsService : IUserCredentialsService
             cancellationToken: cancellationToken
         );
 
-        long grantedRoleId = await _userRepository.AddUserGlobalRole(
-            entity: new UserGlobalRoleEntity
-            {
-                Id = -1,
-                UserId = createdUserId,
-                Role = UserGlobalRole.Member
-            },
+        var grantedRoleIds = await _userRepository.AddUserGlobalRoles(
+            entities:
+            [
+                new UserGlobalRoleEntity
+                {
+                    Id = -1,
+                    UserId = createdUserId,
+                    Role = UserGlobalRole.Member
+                }
+            ],
             cancellationToken: cancellationToken
         );
 

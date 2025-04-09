@@ -43,7 +43,7 @@ internal static partial class LoggerExtensions
     [LoggerMessage(
         Level = LogLevel.Error,
         EventId = 4010,
-        Message = "[{CallId}] [{CurTime}] User not found for email: {InvalidEmail}"
+        Message = "[{CallId}] [{CurTime}] User with email: {InvalidEmail} not found"
     )]
     public static partial void LogUserNotFoundError(this ILogger logger,
         string callId,
@@ -54,7 +54,7 @@ internal static partial class LoggerExtensions
     [LoggerMessage(
         Level = LogLevel.Error,
         EventId = 4011,
-        Message = "[{CallId}] [{CurTime}] User already exists for email: {Email}"
+        Message = "[{CallId}] [{CurTime}] User with email: {Email} already exists"
     )]
     public static partial void LogUserAlreadyExistsError(this ILogger logger,
         string callId,

@@ -65,7 +65,7 @@ public class AuthenticationController : ControllerBase
     [Route("check-auth")]
     [ProducesResponseType<UserCheckAuthResponse>(200)]
     [ProducesResponseType<ErrorResponse>(401)]
-    [ProducesResponseType<ErrorResponse>(404)]
+    
     public async Task<IActionResult> UserCheckAuth(CancellationToken cancellationToken)
     {
         UserModel userModel = await _userCredentialsService.UserCheckAuth(

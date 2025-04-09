@@ -1,4 +1,5 @@
 using System.Text.Json;
+using FluentValidation;
 using FluxConfig.Management.Api.Extensions;
 using FluxConfig.Management.Api.FiltersAttributes;
 using FluxConfig.Management.Api.FiltersAttributes.Auth;
@@ -43,6 +44,7 @@ public sealed class Startup
 
     public void Configure(IApplicationBuilder app)
     {
+        ValidatorOptions.Global.LanguageManager.Enabled = false;
         app.UseMiddleware<TracingMiddleware>();
         app.UsePathBase("/api/fcm");
         app.UseRouting();
