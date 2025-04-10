@@ -1,4 +1,5 @@
 using FluxConfig.Management.Api.Extensions;
+using FluxConfig.Management.Api.FiltersAttributes.Auth.Contexts;
 using FluxConfig.Management.Api.FiltersAttributes.Utils;
 using FluxConfig.Management.Domain.Exceptions.Domain.User;
 using FluxConfig.Management.Domain.Models.Auth;
@@ -14,14 +15,17 @@ public class SessionAuthFilter : IAsyncAuthorizationFilter
     private readonly IUserCredentialsService _credentialsService;
     private readonly ILogger<SessionAuthFilter> _logger;
     private readonly UserGlobalRole _requiredRole;
+    private readonly IRequestContext _requestContext;
 
     public SessionAuthFilter(
         IUserCredentialsService userCredentialsService,
         ILogger<SessionAuthFilter> logger,
+        IRequestContext context,
         UserGlobalRole requiredRole = UserGlobalRole.Member)
     {
         _credentialsService = userCredentialsService;
         _logger = logger;
+        _requestContext = context;
         _requiredRole = requiredRole;
     }
 
@@ -43,6 +47,8 @@ public class SessionAuthFilter : IAsyncAuthorizationFilter
                     reason: $"Dont have enough permissions to access resource. Required role: {_requiredRole.ToString()}"
                 );
             }
+
+            _requestContext.User = user;
         }
         catch (UserUnauthenticatedException ex)
         {

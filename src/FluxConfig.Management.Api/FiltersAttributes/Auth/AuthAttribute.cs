@@ -1,3 +1,4 @@
+using FluxConfig.Management.Api.FiltersAttributes.Auth.Contexts;
 using FluxConfig.Management.Domain.Models.Enums;
 using FluxConfig.Management.Domain.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -14,6 +15,7 @@ public class AuthAttribute : Attribute, IFilterFactory
     {
         var userCredentialsService = serviceProvider.GetRequiredService<IUserCredentialsService>();
         var logger = serviceProvider.GetRequiredService<ILogger<SessionAuthFilter>>();
-        return new SessionAuthFilter(userCredentialsService, logger, RequiredRole);
+        var context = serviceProvider.GetRequiredService<IRequestContext>();
+        return new SessionAuthFilter(userCredentialsService, logger, context, RequiredRole);
     }
 }

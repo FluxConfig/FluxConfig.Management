@@ -27,6 +27,7 @@ public sealed class Startup
             .AddCustomCors(
                 configuration: _configuration,
                 isDevelopment: _hostEnvironment.IsDevelopment())
+            .AddUserAuthContext()
             .AddDalInfrastructure(
                 configuration: _configuration,
                 isDevelopment: _hostEnvironment.IsDevelopment()

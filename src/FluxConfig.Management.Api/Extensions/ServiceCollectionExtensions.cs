@@ -1,5 +1,6 @@
 using FluxConfig.Management.Api.FiltersAttributes;
 using FluxConfig.Management.Api.FiltersAttributes.Auth;
+using FluxConfig.Management.Api.FiltersAttributes.Auth.Contexts;
 using FluxConfig.Management.Infrastructure.Configuration;
 using static System.Int32;
 
@@ -11,6 +12,13 @@ internal static class ServiceCollectionExtensions
     {
         services.AddScoped<ExceptionFilter>();
         services.AddScoped<ApiKeyAuthFilter>();
+        return services;
+    }
+
+    internal static IServiceCollection AddUserAuthContext(this IServiceCollection services)
+    {
+        services.AddScoped<IRequestContext, RequestAuthContext>();
+
         return services;
     }
 
