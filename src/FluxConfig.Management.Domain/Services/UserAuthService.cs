@@ -7,19 +7,18 @@ using FluxConfig.Management.Domain.Exceptions.Infrastructure;
 using FluxConfig.Management.Domain.Hasher;
 using FluxConfig.Management.Domain.Mappers.User;
 using FluxConfig.Management.Domain.Models.Auth;
-using FluxConfig.Management.Domain.Models.Enums;
 using FluxConfig.Management.Domain.Models.User;
 using FluxConfig.Management.Domain.Services.Interfaces;
 using FluxConfig.Management.Domain.Validators.Auth;
 
 namespace FluxConfig.Management.Domain.Services;
 
-public class UserCredentialsService : IUserCredentialsService
+public class UserAuthService : IUserAuthService
 {
     private readonly IUserRepository _userRepository;
     private readonly ISessionsRepository _sessionsRepository;
 
-    public UserCredentialsService(IUserRepository userRepository, ISessionsRepository sessionsRepository)
+    public UserAuthService(IUserRepository userRepository, ISessionsRepository sessionsRepository)
     {
         _userRepository = userRepository;
         _sessionsRepository = sessionsRepository;
@@ -60,21 +59,8 @@ public class UserCredentialsService : IUserCredentialsService
 
         using var transaction = _userRepository.CreateTransactionScope();
 
-        long createdUserId = await _userRepository.AddUserCredentials(
-            entity: registerModel.MapModelToEntity(),
-            cancellationToken: cancellationToken
-        );
-
-        var grantedRoleIds = await _userRepository.AddUserGlobalRoles(
-            entities:
-            [
-                new UserGlobalRoleEntity
-                {
-                    Id = -1,
-                    UserId = createdUserId,
-                    Role = UserGlobalRole.Member
-                }
-            ],
+        IReadOnlyList<long> createdUserIds = await _userRepository.AddUserCredentials(
+            entities: [registerModel.MapModelToEntity()],
             cancellationToken: cancellationToken
         );
 
@@ -118,12 +104,7 @@ public class UserCredentialsService : IUserCredentialsService
                 invalidPassword: loginModel.Password
             );
         }
-
-        IReadOnlyList<UserGlobalRole> userRoles = await GetUserGlobalRoles(
-            userId: userEntity.Id,
-            cancellationToken: cancellationToken
-        );
-
+        
 
         string sessionId = GenerateRandomSessionId();
         DateTimeOffset expirationDate = loginModel.RememberUser
@@ -143,7 +124,7 @@ public class UserCredentialsService : IUserCredentialsService
         transaction.Complete();
 
         return new SetCookieModel(
-            User: userEntity.MapEntityToModel(userRoles),
+            User: userEntity.MapEntityToModel(),
             Session: new SessionModel(
                 Id: sessionId,
                 UserId: userEntity.Id,
@@ -151,21 +132,7 @@ public class UserCredentialsService : IUserCredentialsService
             )
         );
     }
-
-    private async Task<IReadOnlyList<UserGlobalRole>> GetUserGlobalRoles(long userId,
-        CancellationToken cancellationToken)
-    {
-        IReadOnlyList<UserGlobalRoleEntity> userRolesEntities = await _userRepository.GetUserGlobalRoles(
-            userId: userId,
-            cancellationToken: cancellationToken
-        );
-
-        IReadOnlyList<UserGlobalRole> userRoles = userRolesEntities.Count == 0
-            ? new[] { UserGlobalRole.Member }
-            : userRolesEntities.Select(e => e.Role).Distinct().ToList();
-
-        return userRoles;
-    }
+    
 
     private static string GenerateRandomSessionId()
     {
@@ -223,13 +190,8 @@ public class UserCredentialsService : IUserCredentialsService
             cancellationToken: cancellationToken
         );
 
-        IReadOnlyList<UserGlobalRole> userRoles = await GetUserGlobalRoles(
-            userId: userEntity.Id,
-            cancellationToken: cancellationToken
-        );
-
         transaction.Complete();
 
-        return userEntity.MapEntityToModel(userRoles);
+        return userEntity.MapEntityToModel();
     }
 }

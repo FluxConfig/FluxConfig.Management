@@ -12,7 +12,28 @@ public static class ConfigurationGetter
     private const string PgMigrationPasswordEnvKey = "PG_MIGRATION_PSWD";
     private const string FcsUrlEnvKey = "FCS_BASE_URL";
     private const string FcApiKeyEnvKey = "FC_API_KEY";
-    private const string FcWcUrl = "FCWC_URL";
+    private const string FcWcUrlEnvKey = "FCWC_URL";
+    private const string FcmSysadminUsernameEnvKey = "FCM_SYSADMIN_USERNAME";
+    private const string FcmSysadminEmailEnvKey = "FCM_SYSADMIN_EMAIL";
+    private const string FcmSysadminPasswordEnvKey = "FCM_SYSADMIN_PASSWORD";
+
+    internal static FcmSysadminOptions GetSysadminInitOptions(IConfiguration configuration, bool isDevelopment)
+    {
+        if (isDevelopment)
+        {
+            var sysadminOptionsSection = configuration.GetSection("PostgreOptions:SysAdmin");
+
+            return sysadminOptionsSection.Get<FcmSysadminOptions>() ??
+                   throw new ArgumentException("Sysadmin init options are missing");
+        }
+
+        return new FcmSysadminOptions
+        {
+            Email = GetEnvVariable(FcmSysadminEmailEnvKey),
+            Username = GetEnvVariable(FcmSysadminUsernameEnvKey),
+            Password = GetEnvVariable(FcmSysadminPasswordEnvKey)
+        };
+    }
 
     public static string GetInternalFcApiKey(IConfiguration configuration, bool isDevelopment)
     {
@@ -29,11 +50,11 @@ public static class ConfigurationGetter
     {
         if (isDevelopment)
         {
-            return configuration.GetValue<string>("ISC:FcWcUrl") ?? 
+            return configuration.GetValue<string>("ISC:FcWcUrl") ??
                    throw new ArgumentException("FC WebClient url is missing");
         }
 
-        return GetEnvVariable(FcWcUrl);
+        return GetEnvVariable(FcWcUrlEnvKey);
     }
 
     internal static string GetFcsBaseUrl(IConfiguration configuration, bool isDevelopment)

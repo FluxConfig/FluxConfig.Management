@@ -12,18 +12,18 @@ namespace FluxConfig.Management.Api.FiltersAttributes.Auth;
 
 public class SessionAuthFilter : IAsyncAuthorizationFilter
 {
-    private readonly IUserCredentialsService _credentialsService;
+    private readonly IUserAuthService _authService;
     private readonly ILogger<SessionAuthFilter> _logger;
     private readonly UserGlobalRole _requiredRole;
     private readonly IRequestContext _requestContext;
 
     public SessionAuthFilter(
-        IUserCredentialsService userCredentialsService,
+        IUserAuthService userAuthService,
         ILogger<SessionAuthFilter> logger,
         IRequestContext context,
         UserGlobalRole requiredRole = UserGlobalRole.Member)
     {
-        _credentialsService = userCredentialsService;
+        _authService = userAuthService;
         _logger = logger;
         _requestContext = context;
         _requiredRole = requiredRole;
@@ -35,12 +35,12 @@ public class SessionAuthFilter : IAsyncAuthorizationFilter
 
         try
         {
-            UserModel user = await _credentialsService.UserCheckAuth(
+            UserModel user = await _authService.UserCheckAuth(
                 sessionId: context.HttpContext.Request.Cookies[SessionModel.SessionCookieKey],
                 cancellationToken: cancellationToken
             );
 
-            if (user.Roles.Max() < _requiredRole)
+            if (user.Role < _requiredRole)
             {
                 throw new UserUnauthenticatedException(
                     message: $"Dont have enough permissions to access resource. Required role: {_requiredRole.ToString()}",

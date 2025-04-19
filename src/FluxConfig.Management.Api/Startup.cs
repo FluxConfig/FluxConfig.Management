@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentValidation;
 using FluxConfig.Management.Api.Extensions;
 using FluxConfig.Management.Api.FiltersAttributes;
@@ -38,6 +39,7 @@ public sealed class Startup
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             })
             .AddMvcOptions(options =>
             {

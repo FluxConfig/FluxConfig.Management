@@ -1,8 +1,8 @@
 using FluxConfig.Management.Domain.Models.Enums;
 
-namespace FluxConfig.Management.Api.Contracts.Responses.Auth;
+namespace FluxConfig.Management.Api.Contracts.Responses.User;
 
-public record UserLoginResponse(
+public record GetSystemUserResponse(
     long Id,
     string Email,
     string Username,

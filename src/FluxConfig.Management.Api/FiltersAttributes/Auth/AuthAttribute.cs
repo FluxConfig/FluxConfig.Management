@@ -13,7 +13,7 @@ public class AuthAttribute : Attribute, IFilterFactory
 
     public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
     {
-        var userCredentialsService = serviceProvider.GetRequiredService<IUserCredentialsService>();
+        var userCredentialsService = serviceProvider.GetRequiredService<IUserAuthService>();
         var logger = serviceProvider.GetRequiredService<ILogger<SessionAuthFilter>>();
         var context = serviceProvider.GetRequiredService<IRequestContext>();
         return new SessionAuthFilter(userCredentialsService, logger, context, RequiredRole);

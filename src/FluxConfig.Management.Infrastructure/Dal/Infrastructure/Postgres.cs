@@ -25,7 +25,6 @@ public static class Postgres
             {
                 builder.MapComposite<UserCredentialsEntity>("user_credentials_type", Translator);
                 builder.MapComposite<UserSessionEntity>("user_session_type", Translator);
-                builder.MapComposite<UserGlobalRoleEntity>("user_global_role_type", Translator);
                 builder.MapEnum<UserGlobalRole>("user_global_role_enum");
                 if (isDevelopment)
                 {

@@ -12,7 +12,7 @@ internal static class AuthModelsMapper
             Id: model.User.Id,
             Email: model.User.Email,
             Username: model.User.Username,
-            Roles: model.User.Roles.Select(r => r.ToString().ToLower())
+            Role: model.User.Role
         );
     }
 
@@ -22,7 +22,7 @@ internal static class AuthModelsMapper
             Id: model.Id,
             Email: model.Email,
             Username: model.Username,
-            Roles: model.Roles.Select(r => r.ToString().ToLower())
+            Role: model.Role
         );
     }
 }

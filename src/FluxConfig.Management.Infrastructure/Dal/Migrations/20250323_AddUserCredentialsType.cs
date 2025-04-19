@@ -16,7 +16,8 @@ DO $$
                 id           bigint,
                 username     varchar(100),
                 email        varchar(100),
-                password     varchar(255)
+                password     varchar(255),
+                role         user_global_role_enum
             );
         END IF;
     END 

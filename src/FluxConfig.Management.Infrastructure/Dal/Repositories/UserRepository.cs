@@ -12,20 +12,19 @@ public class UserRepository : BaseRepository, IUserRepository
     {
     }
 
-    public async Task<long> AddUserCredentials(UserCredentialsEntity entity, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<long>> AddUserCredentials(UserCredentialsEntity[] entities, CancellationToken cancellationToken)
     {
         const string sqlQuery = @"
-INSERT INTO user_credentials (username, email, password)
-    VALUES (@Username, @Email, @Password)
+INSERT INTO user_credentials (username, email, password, role)
+    SELECT username, email, password, role 
+    FROM UNNEST(@Entities::user_credentials_type[])
     RETURNING id;
 ";
         await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
 
         var sqlParameters = new
         {
-            entity.Username,
-            entity.Email,
-            entity.Password
+            Entities = entities
         };
 
         try
@@ -38,7 +37,7 @@ INSERT INTO user_credentials (username, email, password)
                 )
             );
 
-            return ids.ToList()[0];
+            return ids.ToList();
         }
         catch (NpgsqlException ex)
         {
@@ -84,7 +83,7 @@ SELECT * FROM user_credentials WHERE email = @Email;
         CancellationToken cancellationToken)
     {
         const string sqlQuery = @"
-SELECT uc.id, uc.username, uc.email, uc.password 
+SELECT uc.id, uc.username, uc.email, uc.password, uc.role
 FROM user_sessions
     INNER JOIN user_credentials as uc
     ON user_sessions.user_id = uc.id
@@ -146,73 +145,5 @@ SELECT * FROM user_credentials
         }
 
         return entitiesList[0];
-    }
-
-    public async Task<IReadOnlyList<long>> AddUserGlobalRoles(UserGlobalRoleEntity[] entities,
-        CancellationToken cancellationToken)
-    {
-        const string sqlQuery = @"
-INSERT INTO user_global_roles (user_id, role)
-    SELECT user_id, role
-    FROM UNNEST(@Roles::user_global_role_type[])
-    RETURNING id;
-";
-
-        var sqlParameters = new
-        {
-            Roles = entities
-        };
-
-        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
-
-        IEnumerable<long> createdIds;
-
-        try
-        {
-            createdIds = await connection.QueryAsync<long>(
-                new CommandDefinition(
-                    commandText: sqlQuery,
-                    parameters: sqlParameters,
-                    cancellationToken: cancellationToken
-                )
-            );
-        }
-        catch (NpgsqlException ex)
-        {
-            if (ex.SqlState == "23503")
-            {
-                throw new EntityNotFoundException("UserId Foreign key not found.");
-            }
-
-            throw;
-        }
-
-        return createdIds.ToList();
-    }
-
-    public async Task<IReadOnlyList<UserGlobalRoleEntity>> GetUserGlobalRoles(long userId,
-        CancellationToken cancellationToken)
-    {
-        const string sqlQuery = @"
-SELECT * FROM user_global_roles
-    WHERE user_id = @UserId;
-";
-
-        var sqlParameter = new
-        {
-            UserId = userId
-        };
-
-        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
-
-        var entities = await connection.QueryAsync<UserGlobalRoleEntity>(
-            new CommandDefinition(
-                commandText: sqlQuery,
-                parameters: sqlParameter,
-                cancellationToken: cancellationToken
-            )
-        );
-
-        return entities.ToList();
     }
 }

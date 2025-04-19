@@ -1,6 +1,6 @@
 using FluxConfig.Management.Api.Contracts.Requests.Auth;
-using FluxConfig.Management.Api.Contracts.Responses;
 using FluxConfig.Management.Api.Contracts.Responses.Auth;
+using FluxConfig.Management.Api.FiltersAttributes;
 using FluxConfig.Management.Api.Mappers.Models;
 using FluxConfig.Management.Api.Mappers.Requests;
 using FluxConfig.Management.Domain.Models.Auth;
@@ -14,22 +14,22 @@ namespace FluxConfig.Management.Api.Controllers;
 [Route("auth")]
 public class AuthenticationController : ControllerBase
 {
-    private readonly IUserCredentialsService _userCredentialsService;
+    private readonly IUserAuthService _userAuthService;
 
-    public AuthenticationController(IUserCredentialsService credentialsService)
+    public AuthenticationController(IUserAuthService authService)
     {
-        _userCredentialsService = credentialsService;
+        _userAuthService = authService;
     }
 
     [HttpPost]
     [Route("register")]
     [ProducesResponseType<UserRegisterResponse>(200)]
-    [ProducesResponseType<ErrorResponse>(400)]
-    [ProducesResponseType<ErrorResponse>(404)]
-    [ProducesResponseType<ErrorResponse>(409)]
+    [ErrorResponseType(400)]
+    [ErrorResponseType(404)]
+    [ErrorResponseType(409)]
     public async Task<IActionResult> UserRegister(UserRegisterRequest request, CancellationToken cancellationToken)
     {
-        await _userCredentialsService.RegisterNewUser(
+        await _userAuthService.RegisterNewUser(
             model: request.MapRequestToModel(),
             cancellationToken: cancellationToken
         );
@@ -40,10 +40,10 @@ public class AuthenticationController : ControllerBase
     [HttpPost]
     [Route("login")]
     [ProducesResponseType<UserLoginResponse>(200)]
-    [ProducesResponseType<ErrorResponse>(404)]
+    [ErrorResponseType(404)]
     public async Task<IActionResult> UserLogin(UserLoginRequest request, CancellationToken cancellationToken)
     {
-        SetCookieModel setCookieModel = await _userCredentialsService.LoginUser(
+        SetCookieModel setCookieModel = await _userAuthService.LoginUser(
             model: request.MapRequestToModel(),
             cancellationToken: cancellationToken
         );
@@ -64,11 +64,10 @@ public class AuthenticationController : ControllerBase
     [HttpGet]
     [Route("check-auth")]
     [ProducesResponseType<UserCheckAuthResponse>(200)]
-    [ProducesResponseType<ErrorResponse>(401)]
-    
+    [ErrorResponseType(401)]
     public async Task<IActionResult> UserCheckAuth(CancellationToken cancellationToken)
     {
-        UserModel userModel = await _userCredentialsService.UserCheckAuth(
+        UserModel userModel = await _userAuthService.UserCheckAuth(
             sessionId: HttpContext.Request.Cookies[SessionModel.SessionCookieKey],
             cancellationToken: cancellationToken
         );
@@ -81,7 +80,7 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType<UserLogoutResponse>(200)]
     public async Task<IActionResult> UserLogout(CancellationToken cancellationToken)
     {
-        await _userCredentialsService.LogoutUser(
+        await _userAuthService.LogoutUser(
             sessionId: HttpContext.Request.Cookies[SessionModel.SessionCookieKey] ?? "",
             cancellationToken: cancellationToken
         );

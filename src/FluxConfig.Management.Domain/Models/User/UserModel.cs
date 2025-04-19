@@ -7,5 +7,5 @@ public record UserModel(
     string Username,
     string Email,
     string Password,
-    IEnumerable<UserGlobalRole> Roles
+    UserGlobalRole Role
 );

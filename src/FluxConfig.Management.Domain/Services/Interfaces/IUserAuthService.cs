@@ -3,7 +3,7 @@ using FluxConfig.Management.Domain.Models.User;
 
 namespace FluxConfig.Management.Domain.Services.Interfaces;
 
-public interface IUserCredentialsService
+public interface IUserAuthService
 {
     public Task RegisterNewUser(UserRegisterModel model, CancellationToken cancellationToken);
 
