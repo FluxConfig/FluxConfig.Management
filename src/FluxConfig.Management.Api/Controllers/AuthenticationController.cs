@@ -72,7 +72,7 @@ public class AuthenticationController : ControllerBase
             cancellationToken: cancellationToken
         );
 
-        return Ok(userModel.MapModelToResponse());
+        return Ok(userModel.MapModelToAuthResponse());
     }
 
     [HttpDelete]

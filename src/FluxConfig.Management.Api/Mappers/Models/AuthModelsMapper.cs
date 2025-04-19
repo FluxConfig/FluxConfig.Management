@@ -1,4 +1,5 @@
 using FluxConfig.Management.Api.Contracts.Responses.Auth;
+using FluxConfig.Management.Api.Contracts.Responses.User;
 using FluxConfig.Management.Domain.Models.Auth;
 using FluxConfig.Management.Domain.Models.User;
 
@@ -16,7 +17,7 @@ internal static class AuthModelsMapper
         );
     }
 
-    internal static UserCheckAuthResponse MapModelToResponse(this UserModel model)
+    internal static UserCheckAuthResponse MapModelToAuthResponse(this UserModel model)
     {
         return new UserCheckAuthResponse(
             Id: model.Id,
@@ -24,5 +25,20 @@ internal static class AuthModelsMapper
             Username: model.Username,
             Role: model.Role
         );
+    }
+
+    private static GetSystemUserResponse MapModelToGetSysResponse(this UserModel model)
+    {
+        return new GetSystemUserResponse(
+            Id: model.Id,
+            Email: model.Email,
+            Username: model.Username,
+            Role: model.Role
+        );
+    }
+
+    internal static IEnumerable<GetSystemUserResponse> MapModelsToSysResponses(this IReadOnlyList<UserModel> models)
+    {
+        return models.Select(m => m.MapModelToGetSysResponse());
     }
 }
