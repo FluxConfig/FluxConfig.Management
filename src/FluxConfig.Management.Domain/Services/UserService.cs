@@ -1,11 +1,15 @@
 using FluentValidation;
+using FluxConfig.Management.Domain.Contracts.Dal.Entities;
 using FluxConfig.Management.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Management.Domain.Exceptions.Domain;
 using FluxConfig.Management.Domain.Exceptions.Domain.User;
 using FluxConfig.Management.Domain.Exceptions.Infrastructure;
+using FluxConfig.Management.Domain.Hasher;
+using FluxConfig.Management.Domain.Mappers.User;
 using FluxConfig.Management.Domain.Models.Enums;
 using FluxConfig.Management.Domain.Models.User;
 using FluxConfig.Management.Domain.Services.Interfaces;
+using FluxConfig.Management.Domain.Validators.User;
 
 namespace FluxConfig.Management.Domain.Services;
 
@@ -44,13 +48,25 @@ public class UserService : IUserService
                 innerException: ex);
         }
     }
-    
-    private async Task ChangeUserEmailUnsafe(ChangeUserEmailModel chaneEmailModel, CancellationToken cancellationToken)
+
+    private async Task ChangeUserEmailUnsafe(ChangeUserEmailModel changeEmailModel, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var validator = new ChangeUserEmailModelValidator();
+        await validator.ValidateAndThrowAsync(changeEmailModel, cancellationToken);
+
+        using var transaction = _userRepository.CreateTransactionScope();
+
+        await _userRepository.UpdateUserEmail(
+            userId: changeEmailModel.User.Id,
+            newEmail: changeEmailModel.NewEmail,
+            cancellationToken: cancellationToken
+        );
+
+        transaction.Complete();
     }
 
-    public async Task ChangeUserPassword(ChangeUserPasswordModel changePasswordModel, CancellationToken cancellationToken)
+    public async Task ChangeUserPassword(ChangeUserPasswordModel changePasswordModel,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -69,13 +85,26 @@ public class UserService : IUserService
             );
         }
     }
-    
-    private async Task ChangeUserPasswordUnsafe(ChangeUserPasswordModel changePasswordModel, CancellationToken cancellationToken)
+
+    private async Task ChangeUserPasswordUnsafe(ChangeUserPasswordModel changePasswordModel,
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var validator = new ChangeUserPasswordModelValidator();
+        await validator.ValidateAndThrowAsync(changePasswordModel, cancellationToken);
+
+        using var transaction = _userRepository.CreateTransactionScope();
+
+        await _userRepository.UpdateUserPassword(
+            userId: changePasswordModel.User.Id,
+            newHashedPassword: PasswordHasher.Hash(changePasswordModel.NewPassword),
+            cancellationToken: cancellationToken
+        );
+
+        transaction.Complete();
     }
 
-    public async Task ChangeUserUsername(ChangeUserUsernameModel changeUsernameModel, CancellationToken cancellationToken)
+    public async Task ChangeUserUsername(ChangeUserUsernameModel changeUsernameModel,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -94,10 +123,22 @@ public class UserService : IUserService
             );
         }
     }
-    
-    private async Task ChangeUserUsernameUnsafe(ChangeUserUsernameModel changeUsernameModel, CancellationToken cancellationToken)
+
+    private async Task ChangeUserUsernameUnsafe(ChangeUserUsernameModel changeUsernameModel,
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var validator = new ChangeUserUsernameModelValidator();
+        await validator.ValidateAndThrowAsync(changeUsernameModel, cancellationToken);
+
+        using var transaction = _userRepository.CreateTransactionScope();
+
+        await _userRepository.UpdateUserUsername(
+            userId: changeUsernameModel.User.Id,
+            newUsername: changeUsernameModel.NewUsername,
+            cancellationToken: cancellationToken
+        );
+
+        transaction.Complete();
     }
 
     public async Task ChangeUserRole(UserGlobalRole newRole, long userId, CancellationToken cancellationToken)
@@ -116,10 +157,18 @@ public class UserService : IUserService
             );
         }
     }
-    
+
     private async Task ChangeUserRoleUnsafe(UserGlobalRole newRole, long userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        using var transaction = _userRepository.CreateTransactionScope();
+
+        await _userRepository.UpdateUserRole(
+            userId: userId,
+            newRole: newRole,
+            cancellationToken: cancellationToken
+        );
+
+        transaction.Complete();
     }
 
     public async Task DeleteUser(long userId, CancellationToken cancellationToken)
@@ -138,14 +187,27 @@ public class UserService : IUserService
             );
         }
     }
-    
+
     private async Task DeleteUserUnsafe(long userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        using var transaction = _userRepository.CreateTransactionScope();
+
+        await _userRepository.DeleteUser(
+            userId: userId,
+            cancellationToken: cancellationToken
+        );
+
+        transaction.Complete();
     }
 
     public async Task<IReadOnlyList<UserModel>> GetAllUsers(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        using var transaction = _userRepository.CreateTransactionScope();
+
+        IReadOnlyList<UserCredentialsEntity> entities = await _userRepository.GetAllUsers(cancellationToken);
+
+        transaction.Complete();
+
+        return entities.OrderBy(e => e.Id).MapEntitiesToModels();
     }
 }

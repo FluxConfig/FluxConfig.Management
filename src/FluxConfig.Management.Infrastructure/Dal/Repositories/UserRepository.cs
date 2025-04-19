@@ -2,6 +2,7 @@ using Dapper;
 using FluxConfig.Management.Domain.Contracts.Dal.Entities;
 using FluxConfig.Management.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Management.Domain.Exceptions.Infrastructure;
+using FluxConfig.Management.Domain.Models.Enums;
 using Npgsql;
 
 namespace FluxConfig.Management.Infrastructure.Dal.Repositories;
@@ -12,7 +13,8 @@ public class UserRepository : BaseRepository, IUserRepository
     {
     }
 
-    public async Task<IReadOnlyList<long>> AddUserCredentials(UserCredentialsEntity[] entities, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<long>> AddUserCredentials(UserCredentialsEntity[] entities,
+        CancellationToken cancellationToken)
     {
         const string sqlQuery = @"
 INSERT INTO user_credentials (username, email, password, role)
@@ -78,7 +80,7 @@ SELECT * FROM user_credentials WHERE email = @Email;
 
         return entityList[0];
     }
-    
+
     public async Task<UserCredentialsEntity> GetUserBySessionId(string sessionId, DateTimeOffset curTime,
         CancellationToken cancellationToken)
     {
@@ -105,7 +107,7 @@ FROM user_sessions
                 cancellationToken: cancellationToken
             )
         );
-        
+
         var entityList = userEntities.ToList();
         if (entityList.Count == 0)
         {
@@ -145,5 +147,184 @@ SELECT * FROM user_credentials
         }
 
         return entitiesList[0];
+    }
+
+    public async Task<IReadOnlyList<UserCredentialsEntity>> GetAllUsers(CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+SELECT * FROM user_credentials;
+";
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        var entities = await connection.QueryAsync<UserCredentialsEntity>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        return entities.ToList();
+    }
+
+    public async Task UpdateUserEmail(long userId, string newEmail, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+UPDATE user_credentials
+    SET email = @NewEmail
+    WHERE id = @UserId
+    returning id;
+";
+        var sqlParameters = new
+        {
+            NewEmail = newEmail,
+            UserId = userId
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        IEnumerable<long> editedIds;
+        try
+        {
+            editedIds = await connection.QueryAsync<long>(
+                new CommandDefinition(
+                    commandText: sqlQuery,
+                    parameters: sqlParameters,
+                    cancellationToken: cancellationToken
+                )
+            );
+        }
+        catch (NpgsqlException ex)
+        {
+            if (ex.SqlState == "23505")
+            {
+                throw new EntityAlreadyExistsException("Entity already exists.");
+            }
+
+            throw;
+        }
+
+        if (!editedIds.Any())
+        {
+            throw new EntityNotFoundException("Entity could not be found.");
+        }
+    }
+
+    public async Task UpdateUserPassword(long userId, string newHashedPassword, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+UPDATE user_credentials
+    SET password = @NewPassword
+    WHERE id = @UserId
+    returning id;
+";
+        var sqlParameters = new
+        {
+            NewPassword = newHashedPassword,
+            UserId = userId
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        IEnumerable<long> editedIds = await connection.QueryAsync<long>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        if (!editedIds.Any())
+        {
+            throw new EntityNotFoundException("Entity could not be found.");
+        }
+    }
+
+    public async Task UpdateUserUsername(long userId, string newUsername, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+UPDATE user_credentials
+    SET username = @NewUsername
+    WHERE id = @UserId
+    returning id;
+";
+        var sqlParameters = new
+        {
+            NewUsername = newUsername,
+            UserId = userId
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        IEnumerable<long> editedIds = await connection.QueryAsync<long>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        if (!editedIds.Any())
+        {
+            throw new EntityNotFoundException("Entity could not be found.");
+        }
+    }
+
+    public async Task UpdateUserRole(long userId, UserGlobalRole newRole, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+UPDATE user_credentials
+    SET role = @NewRole::user_global_role_enum
+    WHERE id = @UserId
+    returning id;
+";
+        var sqlParameters = new
+        {
+            NewRole = newRole.ToString().ToLower(),
+            UserId = userId
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        IEnumerable<long> editedIds = await connection.QueryAsync<long>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        if (!editedIds.Any())
+        {
+            throw new EntityNotFoundException("Entity could not be found.");
+        }
+    }
+
+    public async Task DeleteUser(long userId, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+DELETE FROM user_credentials
+    WHERE id = @UserId
+    RETURNING id;
+";
+
+        var sqlParameters = new
+        {
+            UserId = userId
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        var deletedId = await connection.QueryAsync<long>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        if (!deletedId.Any())
+        {
+            throw new EntityNotFoundException("Entity could not be found.");
+        }
     }
 }

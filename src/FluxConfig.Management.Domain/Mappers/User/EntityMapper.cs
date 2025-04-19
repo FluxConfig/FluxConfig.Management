@@ -15,4 +15,9 @@ internal static class EntityMapper
             Role: entity.Role
         );
     }
+
+    internal static IReadOnlyList<UserModel> MapEntitiesToModels(this IEnumerable<UserCredentialsEntity> entities)
+    {
+        return entities.Select(e => e.MapEntityToModel()).ToList();
+    }
 }

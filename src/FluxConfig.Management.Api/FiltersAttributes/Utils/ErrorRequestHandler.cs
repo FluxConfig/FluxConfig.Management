@@ -19,8 +19,8 @@ internal static class ErrorRequestHandler
         JsonResult result = new JsonResult(
             new ErrorResponse(
                 StatusCode: HttpStatusCode.NotFound,
-                Message: $"User with email: {ex.InvalidEmail} {(ex.Id == -1 ? "" :  $", ID: {ex.Id}")} not found",
-                Exceptions: [ex.InvalidEmail ?? ""]
+                Message: $"User with{(ex.InvalidEmail == null ? "" : $" email: {ex.InvalidEmail}")} {(ex.Id == -1 ? "" :  $" ID: {ex.Id}")} not found",
+                Exceptions: [ex.InvalidEmail ?? "", (ex.Id == -1 ? "" : ex.Id.ToString())]
             )
         )
         {
