@@ -23,9 +23,17 @@ public static class Postgres
             connectionString: appConnectionString,
             builder =>
             {
+                builder.MapEnum<UserGlobalRole>("user_global_role_enum");
+                builder.MapEnum<UserConfigRole>("user_config_role_enum");
+                
                 builder.MapComposite<UserCredentialsEntity>("user_credentials_type", Translator);
                 builder.MapComposite<UserSessionEntity>("user_session_type", Translator);
-                builder.MapEnum<UserGlobalRole>("user_global_role_enum");
+                
+                builder.MapComposite<ConfigurationEntity>("configuration_type", Translator);
+                builder.MapComposite<UserConfigurationEntity>("user_configurations_type", Translator);
+                builder.MapComposite<ConfigurationTagEntity>("configuration_tag_type", Translator);
+                builder.MapComposite<ConfigurationKeyEntity>("configuration_key_type", Translator);
+                    
                 if (isDevelopment)
                 {
                     builder.EnableParameterLogging();

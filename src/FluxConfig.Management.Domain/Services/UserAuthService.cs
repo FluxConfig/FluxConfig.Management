@@ -5,6 +5,7 @@ using FluxConfig.Management.Domain.Exceptions.Domain;
 using FluxConfig.Management.Domain.Exceptions.Domain.User;
 using FluxConfig.Management.Domain.Exceptions.Infrastructure;
 using FluxConfig.Management.Domain.Hasher;
+using FluxConfig.Management.Domain.KeyGen;
 using FluxConfig.Management.Domain.Mappers.User;
 using FluxConfig.Management.Domain.Models.Auth;
 using FluxConfig.Management.Domain.Models.User;
@@ -106,7 +107,7 @@ public class UserAuthService : IUserAuthService
         }
         
 
-        string sessionId = GenerateRandomSessionId();
+        string sessionId = KeyGenerator.GenerateCompositeKey();
         DateTimeOffset expirationDate = loginModel.RememberUser
             ? DateTimeOffset.UtcNow.AddHours(24)
             : DateTimeOffset.UtcNow.AddHours(2);
@@ -132,15 +133,6 @@ public class UserAuthService : IUserAuthService
             )
         );
     }
-    
-
-    private static string GenerateRandomSessionId()
-    {
-        Guid sessionGuid = Guid.NewGuid();
-
-        return sessionGuid.ToString();
-    }
-
 
     public async Task LogoutUser(string sessionId, CancellationToken cancellationToken)
     {
