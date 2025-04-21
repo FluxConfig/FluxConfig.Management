@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using FluxConfig.Management.Api.Contracts.Responses;
 using FluxConfig.Management.Domain.Exceptions.Domain;
+using FluxConfig.Management.Domain.Exceptions.Domain.Config;
 using FluxConfig.Management.Domain.Exceptions.Domain.User;
 using FluxConfig.Management.Domain.Exceptions.Infrastructure.ISC;
 using Microsoft.AspNetCore.Mvc;
@@ -70,6 +71,23 @@ internal static class ErrorRequestHandler
     #region User-Auth
     
     internal static void HandleUserUnauthorizedRequest(AuthorizationFilterContext context, UserUnauthenticatedException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.Unauthorized,
+                Message: $"Unauthorized to access resource. {ex.Reason}",
+                Exceptions: [ex.Reason]
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.Unauthorized
+        };
+
+        context.Result = result;
+    }
+    
+    internal static void HandleUserConfigActionUnauthorizedRequest(AuthorizationFilterContext context, UserConfigUnauthorizedException ex)
     {
         JsonResult result = new JsonResult(
             new ErrorResponse(

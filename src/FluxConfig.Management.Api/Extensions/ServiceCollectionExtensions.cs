@@ -17,7 +17,7 @@ internal static class ServiceCollectionExtensions
 
     internal static IServiceCollection AddUserAuthContext(this IServiceCollection services)
     {
-        services.AddScoped<IRequestContext, RequestAuthContext>();
+        services.AddScoped<IRequestAuthContext, RequestAuthAuthContext>();
 
         return services;
     }

@@ -8,6 +8,7 @@ namespace FluxConfig.Management.Api.FiltersAttributes.Auth;
 
 public class ApiKeyAuthFilter : IAuthorizationFilter
 {
+    private const string ApiKeyAuthHeader = "X-API-KEY";
     private readonly IConfiguration _configuration;
     private readonly IWebHostEnvironment _hostEnvironment;
     private readonly ILogger<ApiKeyAuthFilter> _logger;
@@ -28,7 +29,7 @@ public class ApiKeyAuthFilter : IAuthorizationFilter
                 configuration: _configuration,
                 isDevelopment: _hostEnvironment.IsDevelopment());
 
-            string? givenApiKey = context.HttpContext.Request.Headers["X-API-KEY"];
+            string? givenApiKey = context.HttpContext.Request.Headers[ApiKeyAuthHeader];
 
             if (givenApiKey == null || !string.Equals(expectedApiKey, givenApiKey, StringComparison.Ordinal))
             {

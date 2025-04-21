@@ -121,8 +121,7 @@ internal static partial class LoggerExtensions
         string apiKey);
 
     #endregion
-
-
+    
     #region Debug
 
     [LoggerMessage(

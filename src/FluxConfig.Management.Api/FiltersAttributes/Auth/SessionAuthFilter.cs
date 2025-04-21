@@ -15,17 +15,17 @@ public class SessionAuthFilter : IAsyncAuthorizationFilter
     private readonly IUserAuthService _authService;
     private readonly ILogger<SessionAuthFilter> _logger;
     private readonly UserGlobalRole _requiredRole;
-    private readonly IRequestContext _requestContext;
+    private readonly IRequestAuthContext _requestAuthContext;
 
     public SessionAuthFilter(
         IUserAuthService userAuthService,
         ILogger<SessionAuthFilter> logger,
-        IRequestContext context,
+        IRequestAuthContext authContext,
         UserGlobalRole requiredRole = UserGlobalRole.Member)
     {
         _authService = userAuthService;
         _logger = logger;
-        _requestContext = context;
+        _requestAuthContext = authContext;
         _requiredRole = requiredRole;
     }
 
@@ -48,7 +48,7 @@ public class SessionAuthFilter : IAsyncAuthorizationFilter
                 );
             }
 
-            _requestContext.User = user;
+            _requestAuthContext.User = user;
         }
         catch (UserUnauthenticatedException ex)
         {

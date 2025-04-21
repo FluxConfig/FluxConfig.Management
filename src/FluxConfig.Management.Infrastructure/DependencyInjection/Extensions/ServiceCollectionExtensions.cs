@@ -40,6 +40,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ISessionsRepository, SessionsRepository>();
+
+        services.AddScoped<IUserConfigurationRepository, UserConfigurationRepository>();
+        
         return services;
     }
 }

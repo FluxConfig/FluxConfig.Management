@@ -6,16 +6,22 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace FluxConfig.Management.Api.FiltersAttributes.Auth;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public class AuthAttribute : Attribute, IFilterFactory
+public class ConfigAuthAttribute : Attribute, IFilterFactory
 {
     public bool IsReusable => false;
-    public UserGlobalRole RequiredRole { get; set; }
+    public UserConfigRole RequiredRole { get; set; }
 
     public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
     {
-        var userCredentialsService = serviceProvider.GetRequiredService<IUserAuthService>();
-        var logger = serviceProvider.GetRequiredService<ILogger<SessionAuthFilter>>();
+        var configurationUsersService = serviceProvider.GetRequiredService<IConfigurationUsersService>();
+        var logger = serviceProvider.GetRequiredService<ILogger<ConfigRoleAuthFilter>>();
         var context = serviceProvider.GetRequiredService<IRequestAuthContext>();
-        return new SessionAuthFilter(userCredentialsService, logger, context, RequiredRole);
+
+        return new ConfigRoleAuthFilter(
+            configurationUsersService: configurationUsersService,
+            logger: logger,
+            requestAuthAuthContext: context,
+            requiredRole: RequiredRole
+        );
     }
 }

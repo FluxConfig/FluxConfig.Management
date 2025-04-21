@@ -16,12 +16,12 @@ namespace FluxConfig.Management.Api.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-    private readonly IRequestContext _requestAuthContext;
+    private readonly IRequestAuthContext _requestAuthAuthContext;
 
-    public UserController(IUserService userService, IRequestContext requestAuthContext)
+    public UserController(IUserService userService, IRequestAuthContext requestAuthAuthContext)
     {
         _userService = userService;
-        _requestAuthContext = requestAuthContext;
+        _requestAuthAuthContext = requestAuthAuthContext;
     }
 
     # region Member
@@ -38,7 +38,7 @@ public class UserController : ControllerBase
     {
         await _userService.ChangeUserEmail(
             changeEmailModel: new ChangeUserEmailModel(
-                User: _requestAuthContext.User!,
+                User: _requestAuthAuthContext.User!,
                 NewEmail: NullOrTrim(request.NewEmail)
             ),
             cancellationToken: cancellationToken
@@ -59,7 +59,7 @@ public class UserController : ControllerBase
     {
         await _userService.ChangeUserPassword(
             changePasswordModel: new ChangeUserPasswordModel(
-                User: _requestAuthContext.User!,
+                User: _requestAuthAuthContext.User!,
                 NewPassword: NullOrTrim(request.NewPassword)
             ),
             cancellationToken: cancellationToken
@@ -81,7 +81,7 @@ public class UserController : ControllerBase
     {
         await _userService.ChangeUserUsername(
             changeUsernameModel: new ChangeUserUsernameModel(
-                User: _requestAuthContext.User!,
+                User: _requestAuthAuthContext.User!,
                 NewUsername: NullOrTrim(request.NewUsername)
             ),
             cancellationToken: cancellationToken
@@ -99,7 +99,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> DeleteAccount(CancellationToken cancellationToken)
     {
         await _userService.DeleteUser(
-            userId: _requestAuthContext.User!.Id,
+            userId: _requestAuthAuthContext.User!.Id,
             cancellationToken: cancellationToken
         );
 
@@ -155,6 +155,19 @@ public class UserController : ControllerBase
         );
 
         return Ok(new ChangeUserRoleResponse());
+    }
+
+    [HttpGet]
+    [Route("admin/get-user")]
+    [Auth(RequiredRole = UserGlobalRole.Admin)]
+    [ProducesResponseType<GetUserWithConfigurationsResponse>(200)]
+    [ErrorResponseType(401)]
+    [ErrorResponseType(404)]
+    public async Task<IActionResult> GetUserWithConfigs([FromQuery] GetUserWithConfigurationsRequest request,
+        CancellationToken cancellationToken)
+    {
+        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
+        throw new NotImplementedException();
     }
 
     # endregion

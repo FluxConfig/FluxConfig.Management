@@ -10,6 +10,12 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IUserAuthService, UserAuthService>();
         services.AddScoped<IUserService, UserService>();
+        
+        services.AddScoped<IConfigurationsDataService, ConfigurationsDataService>();
+        services.AddScoped<IConfigurationsMetaService, ConfigurationsMetaService>();
+        services.AddScoped<IConfigurationKeysService, ConfigurationKeysService>();
+        services.AddScoped<IConfigurationTagsService, ConfigurationTagsService>();
+        services.AddScoped<IConfigurationUsersService, ConfigurationUsersService>();
 
         return services;
     }
