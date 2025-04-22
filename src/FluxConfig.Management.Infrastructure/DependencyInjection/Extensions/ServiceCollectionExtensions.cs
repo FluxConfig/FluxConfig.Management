@@ -46,7 +46,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ISessionsRepository, SessionsRepository>();
 
+        services.AddScoped<IConfigurationsRepository, ConfigurationsRepository>();
         services.AddScoped<IUserConfigurationRepository, UserConfigurationRepository>();
+        services.AddScoped<IConfigurationKeysRepository, ConfigurationKeysRepository>();
+        services.AddScoped<IConfigurationTagsRepository, ConfigurationTagsRepository>();
 
         return services;
     }

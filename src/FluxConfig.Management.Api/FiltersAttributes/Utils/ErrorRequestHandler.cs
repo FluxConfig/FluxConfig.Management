@@ -13,6 +13,61 @@ namespace FluxConfig.Management.Api.FiltersAttributes.Utils;
 
 internal static class ErrorRequestHandler
 {
+    # region Configuration
+    
+    internal static void HandleConfigurationNotFoundRequest(ExceptionContext context, ConfigurationNotFoundException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.NotFound,
+                Message: $"Configuration with id: {ex.ConfigurationId} not found",
+                Exceptions: [ex.ConfigurationId.ToString()]
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.NotFound
+        };
+
+        context.Result = result;
+    }
+    
+    internal static void HandleConfigurationKeyNotFoundRequest(ExceptionContext context, ConfigurationKeyNotFoundException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.NotFound,
+                Message: $"Configuration key with id: {ex.KeyId} not found",
+                Exceptions: [ex.KeyId]
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.NotFound
+        };
+
+        context.Result = result;
+    }
+    
+    internal static void HandleConfigurationTagNotFoundRequest(ExceptionContext context, ConfigurationTagNotFoundException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.NotFound,
+                Message: $"Configuration tag with id: {ex.TagId} not found",
+                Exceptions: [ex.TagId.ToString()]
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.NotFound
+        };
+
+        context.Result = result;
+    }
+    
+    # endregion
+    
     #region User
     
     internal static void HandleUserNotFoundRequest(ExceptionContext context, UserNotFoundException ex)

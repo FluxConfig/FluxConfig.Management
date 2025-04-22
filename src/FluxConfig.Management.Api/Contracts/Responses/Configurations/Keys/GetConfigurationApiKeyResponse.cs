@@ -5,5 +5,5 @@ namespace FluxConfig.Management.Api.Contracts.Responses.Configurations.Keys;
 public record GetConfigurationApiKeyResponse(
     string Id,
     UserConfigRole RolePermission,
-    DateTimeOffset ExpirationDate
+    DateTime ExpirationDate
 );

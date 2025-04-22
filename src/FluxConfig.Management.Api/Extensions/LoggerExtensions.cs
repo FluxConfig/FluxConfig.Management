@@ -118,8 +118,6 @@ internal static partial class LoggerExtensions
         DateTime curTime,
         int statusCode);
     
-    
-    
     [LoggerMessage(
         Level = LogLevel.Error,
         EventId = 4022,
@@ -130,6 +128,37 @@ internal static partial class LoggerExtensions
         string callId,
         DateTime curTime,
         string apiKey);
+    
+    
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        EventId = 4023,
+        Message = "[{CallId}] [{CurTime}] Configuration with id: {ConfigId} not found"
+    )]
+    public static partial void LogConfigurationNotFoundError(this ILogger logger,
+        string callId,
+        DateTime curTime,
+        long configId);
+    
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        EventId = 4024,
+        Message = "[{CallId}] [{CurTime}] Configuration key with id: {KeyId} not found"
+    )]
+    public static partial void LogConfigurationKeyNotFoundError(this ILogger logger,
+        string callId,
+        DateTime curTime,
+        string keyId);
+    
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        EventId = 4025,
+        Message = "[{CallId}] [{CurTime}] Configuration tag with id: {TagId} not found"
+    )]
+    public static partial void LogConfigurationTagNotFoundError(this ILogger logger,
+        string callId,
+        DateTime curTime,
+        long tagId);
 
     #endregion
     

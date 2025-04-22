@@ -5,7 +5,6 @@ using FluxConfig.Management.Api.FiltersAttributes.Auth;
 using FluxConfig.Management.Api.FiltersAttributes.Auth.Contexts;
 using FluxConfig.Management.Domain.Models.Enums;
 using FluxConfig.Management.Domain.Services.Interfaces;
-using FluxConfig.Management.Infrastructure.ISC.Clients.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FluxConfig.Management.Api.Controllers;
@@ -17,14 +16,11 @@ public class ConfigurationTagsController : ControllerBase
 {
     private readonly IConfigurationTagsService _configurationTagsService;
     private readonly IRequestAuthContext _requestAuthContext;
-    private readonly IFluxConfigStorageClient _client;
 
-    public ConfigurationTagsController(IConfigurationTagsService configurationTagsService,
-        IRequestAuthContext requestAuthContext, IFluxConfigStorageClient client)
+    public ConfigurationTagsController(IConfigurationTagsService configurationTagsService, IRequestAuthContext requestAuthContext)
     {
         _configurationTagsService = configurationTagsService;
         _requestAuthContext = requestAuthContext;
-        _client = client;
     }
 
     [HttpPost]
@@ -38,12 +34,7 @@ public class ConfigurationTagsController : ControllerBase
     public async Task<IActionResult> CreateTag(AddConfigurationTagRequest request, CancellationToken cancellationToken)
     {
         await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        await _client.DeleteConfiguration(
-            key: "TEST-CONFIG-KEY",
-            tags: ["Test"],
-            cancellationToken: cancellationToken
-        );
-        return Ok(new AddConfigurationTagResponse());
+        throw new NotImplementedException();
     }
 
     [HttpPatch]
@@ -87,13 +78,13 @@ public class ConfigurationTagsController : ControllerBase
 
     [HttpGet]
     [Route("get")]
-    [ConfigAuth(RequiredRole = UserConfigRole.Member)]
     [ProducesResponseType<GetConfigurationTagMetaResponse>(200)]
     [ErrorResponseType(401)]
     [ErrorResponseType(404)]
     public async Task<IActionResult> GetMeta([FromQuery] GetConfigurationTagMetaRequest request,
         CancellationToken cancellationToken)
     {
+        //TODO: валидировать внутри по требуемой роли тэга
         await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
         throw new NotImplementedException();
     }

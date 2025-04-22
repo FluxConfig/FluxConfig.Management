@@ -4,6 +4,7 @@ namespace FluxConfig.Management.Api.Contracts.Responses.Configurations.Tags;
 
 public record GetConfigurationTagMetaResponse(
     long Id,
+    long ConfigurationId,
     string Tag,
     string Description,
     UserConfigRole RequiredRole

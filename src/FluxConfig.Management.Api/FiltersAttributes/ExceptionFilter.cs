@@ -1,5 +1,6 @@
 using FluxConfig.Management.Api.FiltersAttributes.Utils;
 using FluxConfig.Management.Domain.Exceptions.Domain;
+using FluxConfig.Management.Domain.Exceptions.Domain.Config;
 using FluxConfig.Management.Domain.Exceptions.Domain.User;
 using FluxConfig.Management.Domain.Exceptions.Infrastructure.ISC;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -27,8 +28,20 @@ public class ExceptionFilter : IExceptionFilter
 
         switch (context.Exception)
         {
-            // ISC - FcStorage
+            // Configuration
+            case ConfigurationNotFoundException ex:
+                ErrorRequestHandler.HandleConfigurationNotFoundRequest(context, ex);
+                break;
             
+            case ConfigurationKeyNotFoundException ex:
+                ErrorRequestHandler.HandleConfigurationKeyNotFoundRequest(context, ex);
+                break;
+            
+            case ConfigurationTagNotFoundException ex:
+                ErrorRequestHandler.HandleConfigurationTagNotFoundRequest(context, ex);
+                break;
+            
+            // ISC - FcStorage
             case FcStorageInternalApiKeyUnauthenticatedException ex:
                 ErrorRequestHandler.HandleInternalError(context);
                 break;
@@ -38,7 +51,6 @@ public class ExceptionFilter : IExceptionFilter
                 break;
             
             // User
-            
             case UserAlreadyExistsException ex:
                 ErrorRequestHandler.HandleUserConflictRequest(context, ex);
                 break;

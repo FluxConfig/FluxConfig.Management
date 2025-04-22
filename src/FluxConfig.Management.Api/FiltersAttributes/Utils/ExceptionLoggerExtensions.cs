@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using FluxConfig.Management.Api.Extensions;
 using FluxConfig.Management.Domain.Exceptions.Domain;
+using FluxConfig.Management.Domain.Exceptions.Domain.Config;
 using FluxConfig.Management.Domain.Exceptions.Domain.User;
 using FluxConfig.Management.Domain.Exceptions.Infrastructure.ISC;
 
@@ -15,8 +16,34 @@ internal static class ExceptionLoggerExtensions
     {
         switch (exception)
         {
-            // ISC - Fc Storage
+            // Configuration
+            case ConfigurationNotFoundException ex:
+                logger.LogConfigurationNotFoundError(
+                    callId: callId,
+                    curTime: curTime,
+                    configId: ex.ConfigurationId
+                );
+                break;
 
+            case ConfigurationKeyNotFoundException ex:
+
+                logger.LogConfigurationKeyNotFoundError(
+                    callId: callId,
+                    curTime: curTime,
+                    keyId: ex.KeyId
+                );
+                break;
+
+            case ConfigurationTagNotFoundException ex:
+
+                logger.LogConfigurationTagNotFoundError(
+                    callId: callId,
+                    curTime: curTime,
+                    tagId: ex.TagId
+                );
+                break;
+
+            // ISC - Fc Storage
             case FcStorageResponseException ex:
 
                 logger.LogFcStorageUnexpectedResponseError(
