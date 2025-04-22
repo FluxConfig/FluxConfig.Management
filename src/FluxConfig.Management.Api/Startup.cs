@@ -29,6 +29,10 @@ public sealed class Startup
                 configuration: _configuration,
                 isDevelopment: _hostEnvironment.IsDevelopment())
             .AddUserAuthContext()
+            .AddStorageClient(
+                configuration: _configuration,
+                isDevelopment: _hostEnvironment.IsDevelopment()
+            )
             .AddDalInfrastructure(
                 configuration: _configuration,
                 isDevelopment: _hostEnvironment.IsDevelopment()
@@ -56,12 +60,9 @@ public sealed class Startup
         app.UseRouting();
 
         app.UseMiddleware<LoggingMiddleware>();
-        
+
         app.UseCors();
 
-        app.UseEndpoints(endpointBuilder =>
-        {
-            endpointBuilder.MapControllers();
-        });
+        app.UseEndpoints(endpointBuilder => { endpointBuilder.MapControllers(); });
     }
 }

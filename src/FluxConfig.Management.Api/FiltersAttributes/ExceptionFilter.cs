@@ -1,6 +1,7 @@
 using FluxConfig.Management.Api.FiltersAttributes.Utils;
 using FluxConfig.Management.Domain.Exceptions.Domain;
 using FluxConfig.Management.Domain.Exceptions.Domain.User;
+using FluxConfig.Management.Domain.Exceptions.Infrastructure.ISC;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace FluxConfig.Management.Api.FiltersAttributes;
@@ -26,6 +27,16 @@ public class ExceptionFilter : IExceptionFilter
 
         switch (context.Exception)
         {
+            // ISC - FcStorage
+            
+            case FcStorageInternalApiKeyUnauthenticatedException ex:
+                ErrorRequestHandler.HandleInternalError(context);
+                break;
+            
+            case FcStorageResponseException ex:
+                ErrorRequestHandler.HandleInternalError(context);
+                break;
+            
             // User
             
             case UserAlreadyExistsException ex:

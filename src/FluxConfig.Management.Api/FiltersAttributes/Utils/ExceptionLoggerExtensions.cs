@@ -4,6 +4,7 @@ using FluentValidation.Results;
 using FluxConfig.Management.Api.Extensions;
 using FluxConfig.Management.Domain.Exceptions.Domain;
 using FluxConfig.Management.Domain.Exceptions.Domain.User;
+using FluxConfig.Management.Domain.Exceptions.Infrastructure.ISC;
 
 namespace FluxConfig.Management.Api.FiltersAttributes.Utils;
 
@@ -14,6 +15,28 @@ internal static class ExceptionLoggerExtensions
     {
         switch (exception)
         {
+            // ISC - Fc Storage
+
+            case FcStorageResponseException ex:
+
+                logger.LogFcStorageUnexpectedResponseError(
+                    callId: callId,
+                    curTime: curTime,
+                    statusCode: ex.StatusCode
+                );
+
+                break;
+
+            case FcStorageInternalApiKeyUnauthenticatedException ex:
+
+                logger.LogInternalServiceOutgoingAuthError(
+                    callId: callId,
+                    curTime: curTime,
+                    apiKey: ex.InvalidApiKey
+                );
+
+                break;
+
             // Auth / credentials
             case InvalidUserCredentialsException ex:
 

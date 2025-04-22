@@ -5,6 +5,7 @@ using FluxConfig.Management.Api.FiltersAttributes.Auth;
 using FluxConfig.Management.Api.FiltersAttributes.Auth.Contexts;
 using FluxConfig.Management.Domain.Models.Enums;
 using FluxConfig.Management.Domain.Services.Interfaces;
+using FluxConfig.Management.Infrastructure.ISC.Clients.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FluxConfig.Management.Api.Controllers;
@@ -12,17 +13,20 @@ namespace FluxConfig.Management.Api.Controllers;
 [ApiController]
 [Route("configurations/tags")]
 [Auth(RequiredRole = UserGlobalRole.Member)]
-public class ConfigurationTagsController: ControllerBase
+public class ConfigurationTagsController : ControllerBase
 {
     private readonly IConfigurationTagsService _configurationTagsService;
     private readonly IRequestAuthContext _requestAuthContext;
+    private readonly IFluxConfigStorageClient _client;
 
-    public ConfigurationTagsController(IConfigurationTagsService configurationTagsService, IRequestAuthContext requestAuthContext)
+    public ConfigurationTagsController(IConfigurationTagsService configurationTagsService,
+        IRequestAuthContext requestAuthContext, IFluxConfigStorageClient client)
     {
         _configurationTagsService = configurationTagsService;
         _requestAuthContext = requestAuthContext;
+        _client = client;
     }
-    
+
     [HttpPost]
     [Route("create")]
     [ConfigAuth(RequiredRole = UserConfigRole.Admin)]
@@ -34,7 +38,12 @@ public class ConfigurationTagsController: ControllerBase
     public async Task<IActionResult> CreateTag(AddConfigurationTagRequest request, CancellationToken cancellationToken)
     {
         await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _client.DeleteConfiguration(
+            key: "TEST-CONFIG-KEY",
+            tags: ["Test"],
+            cancellationToken: cancellationToken
+        );
+        return Ok(new AddConfigurationTagResponse());
     }
 
     [HttpPatch]
@@ -50,7 +59,7 @@ public class ConfigurationTagsController: ControllerBase
         await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
         throw new NotImplementedException();
     }
-    
+
     [HttpPatch]
     [Route("change/role")]
     [ConfigAuth(RequiredRole = UserConfigRole.Admin)]
@@ -82,13 +91,13 @@ public class ConfigurationTagsController: ControllerBase
     [ProducesResponseType<GetConfigurationTagMetaResponse>(200)]
     [ErrorResponseType(401)]
     [ErrorResponseType(404)]
-    public async Task<IActionResult> GetMeta([FromQuery]GetConfigurationTagMetaRequest request,
+    public async Task<IActionResult> GetMeta([FromQuery] GetConfigurationTagMetaRequest request,
         CancellationToken cancellationToken)
     {
         await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
         throw new NotImplementedException();
     }
-    
+
     [HttpGet]
     [Route("get-all")]
     [ConfigAuth(RequiredRole = UserConfigRole.Member)]

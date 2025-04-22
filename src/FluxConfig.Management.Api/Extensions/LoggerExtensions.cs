@@ -95,7 +95,6 @@ internal static partial class LoggerExtensions
         DateTime curTime);
     
     
-    // TODO: Не забыть добавить при ISC
     [LoggerMessage(
         Level = LogLevel.Error,
         EventId = 4020,
@@ -108,10 +107,22 @@ internal static partial class LoggerExtensions
         string apiKey);
     
     
-    
     [LoggerMessage(
         Level = LogLevel.Error,
         EventId = 4021,
+        Message =
+            "[{CallId}] [{CurTime}] Given unexpected response from FC Storage service with status-code: {StatusCode}"
+    )]
+    public static partial void LogFcStorageUnexpectedResponseError(this ILogger logger,
+        string callId,
+        DateTime curTime,
+        int statusCode);
+    
+    
+    
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        EventId = 4022,
         Message =
             "[{CallId}] [{CurTime}] Given invalid internal api-key authentication metadata needed to access FC Management api. X-API-KEY: {ApiKey}"
     )]

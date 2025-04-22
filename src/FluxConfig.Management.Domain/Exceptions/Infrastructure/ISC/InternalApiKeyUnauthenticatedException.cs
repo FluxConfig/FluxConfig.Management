@@ -1,8 +1,8 @@
 namespace FluxConfig.Management.Domain.Exceptions.Infrastructure.ISC;
 
-public class InternalApiKeyUnauthenticatedException: Exception
+public class InternalApiKeyUnauthenticatedException: InfrastructureException
 {
-    public string InvalidApiKey { get; init; }
+    public string InvalidApiKey { get; }
     
     public InternalApiKeyUnauthenticatedException(string? message, string apiKey) : base(message)
     {
