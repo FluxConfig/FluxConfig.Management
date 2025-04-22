@@ -29,6 +29,10 @@ public class ExceptionFilter : IExceptionFilter
         switch (context.Exception)
         {
             // Configuration
+            case UserDoesntBelongToConfigException ex:
+                ErrorRequestHandler.HandleUserDoesntBelongToConfigNotFoundRequest(context, ex);
+                break;
+            
             case ConfigurationNotFoundException ex:
                 ErrorRequestHandler.HandleConfigurationNotFoundRequest(context, ex);
                 break;
@@ -51,6 +55,10 @@ public class ExceptionFilter : IExceptionFilter
                 break;
             
             // User
+            case AdminChangeHisRoleException ex:
+                ErrorRequestHandler.HandleAdminChangeHisRoleBrRequest(context, ex);
+                break;
+            
             case UserAlreadyExistsException ex:
                 ErrorRequestHandler.HandleUserConflictRequest(context, ex);
                 break;

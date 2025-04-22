@@ -17,6 +17,15 @@ internal static class ExceptionLoggerExtensions
         switch (exception)
         {
             // Configuration
+            case UserDoesntBelongToConfigException ex:
+                logger.LogUserDoesntBelongToConfigError(
+                    callId: callId,
+                    curTime: curTime,
+                    userId: ex.UserId,
+                    configId: ex.ConfigId
+                );
+                break;
+
             case ConfigurationNotFoundException ex:
                 logger.LogConfigurationNotFoundError(
                     callId: callId,
@@ -65,6 +74,16 @@ internal static class ExceptionLoggerExtensions
                 break;
 
             // Auth / credentials
+            case AdminChangeHisRoleException ex:
+                
+                logger.LogAdminChangeHisRoleBadRequest(
+                    callId: callId,
+                    curTime: curTime,
+                    adminId: ex.AdminId
+                    );
+                
+                break;
+            
             case InvalidUserCredentialsException ex:
 
                 logger.LogInvalidUserCredentialsError(

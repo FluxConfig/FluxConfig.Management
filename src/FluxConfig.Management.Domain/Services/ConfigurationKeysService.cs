@@ -45,10 +45,14 @@ public class ConfigurationKeysService : IConfigurationKeysService
             RolePermission = keyModel.RolePermission
         };
 
+        using var transaction = _configurationKeysRepository.CreateTransactionScope();
+
         await _configurationKeysRepository.AddKeys(
             entities: [entity],
             cancellationToken: cancellationToken
         );
+        
+        transaction.Complete();;
     }
 
     public async Task DeleteKey(string keyId, long configurationId, CancellationToken cancellationToken)
@@ -69,23 +73,31 @@ public class ConfigurationKeysService : IConfigurationKeysService
 
     private async Task DeleteKeyUnsafe(string keyId, long configurationId, CancellationToken cancellationToken)
     {
+        using var transaction = _configurationKeysRepository.CreateTransactionScope();
+        
         await _configurationKeysRepository.DeleteKey(
             id: keyId,
             configurationId: configurationId,
             cancellationToken: cancellationToken
         );
+        
+        transaction.Complete();
     }
 
     public async Task<IReadOnlyList<ConfigurationKeyModel>> GetAllConfigKeysForRole(long configurationId,
         UserConfigRole role,
         CancellationToken cancellationToken)
     {
+        using var transaction = _configurationKeysRepository.CreateTransactionScope();
+        
         var configKeysEntities = await _configurationKeysRepository.GetAllForConfiguration(
             configurationId: configurationId,
             currentUtcTime: DateTimeOffset.UtcNow,
             cancellationToken: cancellationToken
         );
+        
+        transaction.Complete();
 
-        return configKeysEntities.mapEntitiesToModelsEnumerable().Where(m => m.RolePermission <= role).ToList();
+        return configKeysEntities.MapEntitiesToModelsEnumerable().Where(m => m.RolePermission <= role).ToList();
     }
 }

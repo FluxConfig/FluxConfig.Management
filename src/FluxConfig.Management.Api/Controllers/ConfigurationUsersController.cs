@@ -3,6 +3,8 @@ using FluxConfig.Management.Api.Contracts.Responses.Configurations.Users;
 using FluxConfig.Management.Api.FiltersAttributes;
 using FluxConfig.Management.Api.FiltersAttributes.Auth;
 using FluxConfig.Management.Api.FiltersAttributes.Auth.Contexts;
+using FluxConfig.Management.Api.Mappers.Models;
+using FluxConfig.Management.Domain.Models.Configuration;
 using FluxConfig.Management.Domain.Models.Enums;
 using FluxConfig.Management.Domain.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -32,8 +34,13 @@ public class ConfigurationUsersController : ControllerBase
     public async Task<IActionResult> AddToConfiguration(AddUserToConfigurationRequest request,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _configurationUsersService.AddUserToConfiguration(
+            configurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId,
+            userEmail: request.UserEmail.Trim(),
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new AddUserToConfigurationResponse());
     }
 
     [HttpPatch]
@@ -45,8 +52,16 @@ public class ConfigurationUsersController : ControllerBase
     public async Task<IActionResult> ChangeRole(ChangeUserConfigurationRoleRequest request,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _configurationUsersService.ChangeUserConfigurationRole(
+            model: new UserConfigurationRoleModel(
+                UserId: request.UserId,
+                Role: request.NewRole,
+                ConfigurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId
+            ),
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new ChangeUserConfigurationRoleResponse());
     }
 
     [HttpDelete]
@@ -57,8 +72,16 @@ public class ConfigurationUsersController : ControllerBase
     public async Task<IActionResult> DeleteUser(DeleteUserFromConfigurationRequest request,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _configurationUsersService.DeleteUserFromConfiguration(
+            model: new UserConfigurationRoleModel(
+                UserId: request.UserId,
+                Role: UserConfigRole.Member,
+                ConfigurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId
+            ),
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new DeleteUserFromConfigurationResponse());
     }
 
     [HttpGet]
@@ -68,7 +91,11 @@ public class ConfigurationUsersController : ControllerBase
     [ErrorResponseType(401)]
     public async Task<IActionResult> GetConfigurationUsers(CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        IReadOnlyList<ConfigurationUsersViewModel> models = await _configurationUsersService.GetConfigurationMembers(
+            configurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId,
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(models.MapModelsToResponses());
     }
 }

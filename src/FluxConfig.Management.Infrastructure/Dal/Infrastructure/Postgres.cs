@@ -1,5 +1,6 @@
 using FluentMigrator.Runner;
 using FluxConfig.Management.Domain.Contracts.Dal.Entities;
+using FluxConfig.Management.Domain.Contracts.Dal.Entities.Views;
 using FluxConfig.Management.Domain.Models.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -33,6 +34,8 @@ public static class Postgres
                 builder.MapComposite<UserConfigurationEntity>("user_configurations_type", Translator);
                 builder.MapComposite<ConfigurationTagEntity>("configuration_tag_type", Translator);
                 builder.MapComposite<ConfigurationKeyEntity>("configuration_key_type", Translator);
+
+                builder.MapComposite<ConfigurationUserViewEntity>("configuration_user_view_type", Translator);
                     
                 if (isDevelopment)
                 {

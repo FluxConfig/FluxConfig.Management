@@ -141,11 +141,12 @@ public class UserService : IUserService
         transaction.Complete();
     }
 
-    public async Task ChangeUserRole(UserGlobalRole newRole, long userId, CancellationToken cancellationToken)
+    public async Task ChangeUserRole(UserGlobalRole newRole, long userId, long adminId,
+        CancellationToken cancellationToken)
     {
         try
         {
-            await ChangeUserRoleUnsafe(newRole, userId, cancellationToken);
+            await ChangeUserRoleUnsafe(newRole, userId, adminId, cancellationToken);
         }
         catch (EntityNotFoundException ex)
         {
@@ -158,8 +159,16 @@ public class UserService : IUserService
         }
     }
 
-    private async Task ChangeUserRoleUnsafe(UserGlobalRole newRole, long userId, CancellationToken cancellationToken)
+    private async Task ChangeUserRoleUnsafe(UserGlobalRole newRole, long userId, long adminId,
+        CancellationToken cancellationToken)
     {
+        if (userId == adminId)
+        {
+            throw new AdminChangeHisRoleException(
+                message: "Unable to change admin role.",
+                adminId: adminId);
+        }
+
         using var transaction = _userRepository.CreateTransactionScope();
 
         await _userRepository.UpdateUserRole(

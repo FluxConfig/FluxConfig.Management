@@ -66,6 +66,23 @@ internal static class ErrorRequestHandler
         context.Result = result;
     }
     
+    internal static void HandleUserDoesntBelongToConfigNotFoundRequest(ExceptionContext context, UserDoesntBelongToConfigException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.NotFound,
+                Message: $"User with id: {ex.UserId} doesnt belong to config.",
+                Exceptions: [ex.UserId.ToString()]
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.NotFound
+        };
+
+        context.Result = result;
+    }
+    
     # endregion
     
     #region User
@@ -111,6 +128,23 @@ internal static class ErrorRequestHandler
                 StatusCode: HttpStatusCode.BadRequest,
                 Message: "Invalid credentials provided.",
                 Exceptions: [ex.InvalidPassword ?? ""]
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.BadRequest
+        };
+
+        context.Result = result;
+    }
+    
+    internal static void HandleAdminChangeHisRoleBrRequest(ExceptionContext context, AdminChangeHisRoleException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.BadRequest,
+                Message: "Admin can't change his own role.",
+                Exceptions: []
             )
         )
         {

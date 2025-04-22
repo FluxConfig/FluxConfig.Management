@@ -144,6 +144,7 @@ public class UserController : ControllerBase
     [Auth(RequiredRole = UserGlobalRole.Admin)]
     [ProducesResponseType<ChangeUserRoleResponse>(200)]
     [ErrorResponseType(401)]
+    [ErrorResponseType(400)]
     [ErrorResponseType(404)]
     public async Task<IActionResult> ChangeUserRole(ChangeUserRoleRequest request,
         CancellationToken cancellationToken)
@@ -151,6 +152,7 @@ public class UserController : ControllerBase
         await _userService.ChangeUserRole(
             userId: request.UserId,
             newRole: request.Role,
+            adminId: _requestAuthAuthContext.User!.Id,
             cancellationToken: cancellationToken
         );
 

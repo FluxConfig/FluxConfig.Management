@@ -159,6 +159,29 @@ internal static partial class LoggerExtensions
         string callId,
         DateTime curTime,
         long tagId);
+    
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        EventId = 4026,
+        Message = "[{CallId}] [{CurTime}] User with id: {UserId} doesnt belong to config with id: {ConfigId}"
+    )]
+    public static partial void LogUserDoesntBelongToConfigError(this ILogger logger,
+        string callId,
+        DateTime curTime,
+        long userId,
+        long configId);
+    
+    
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        EventId = 4027,
+        Message = "[{CallId}] [{CurTime}] Admin with id: {AdminId} cant change his role."
+    )]
+    public static partial void LogAdminChangeHisRoleBadRequest(this ILogger logger,
+        string callId,
+        DateTime curTime,
+        long adminId);
+    
 
     #endregion
     
