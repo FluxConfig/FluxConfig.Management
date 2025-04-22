@@ -53,7 +53,7 @@ public class AddConfigurationsScheme: Migration
         Create.Table("configuration_tags")
             .WithColumn("id").AsInt64().PrimaryKey("configuration_tags_pk").Identity()
             .WithColumn("configuration_id").AsInt64().NotNullable()
-            .WithColumn("tag").AsString(30).NotNullable()
+            .WithColumn("tag").AsString(30).NotNullable().Unique()
             .WithColumn("description").AsString(500).NotNullable()
             .WithColumn("required_role").AsCustom("user_config_role_enum").NotNullable();
         

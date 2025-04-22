@@ -8,7 +8,7 @@ namespace FluxConfig.Management.Api.Controllers;
 
 [ApiController]
 [Route("configurations/client-service")]
-public class ConfigurationAuthController: ControllerBase
+public class ConfigurationAuthController : ControllerBase
 {
     private readonly IConfigurationKeysService _configurationKeysService;
 
@@ -22,9 +22,22 @@ public class ConfigurationAuthController: ControllerBase
     [ProducesResponseType<ClientServiceAuthResponse>(200)]
     [ErrorResponseType(401)]
     [ErrorResponseType(404)]
-    public async Task<IActionResult> AuthClientService([FromQuery]ClientServiceAuthRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> AuthClientService([FromQuery] ClientServiceAuthRequest request,
+        CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        string storageKey = await _configurationKeysService.AuthenticateClientService(
+            apiKey: NullOrTrim(request.ApiKey),
+            configurationTag: NullOrTrim(request.Tag),
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new ClientServiceAuthResponse(
+            ConfigKey: storageKey
+        ));
+    }
+
+    private static string NullOrTrim(string? val)
+    {
+        return val == null ? "" : val.Trim();
     }
 }

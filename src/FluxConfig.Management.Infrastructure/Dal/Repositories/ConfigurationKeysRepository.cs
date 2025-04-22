@@ -104,4 +104,37 @@ SELECT * FROM configuration_keys
 
         return entities.ToList();
     }
+
+    public async Task<ConfigurationKeyEntity> GetValidConfigurationKey(string id, DateTimeOffset curTimeUtc, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+SELECT * FROM configuration_keys
+    WHERE id = @KeyId
+    AND expiration_date >= @CurrentUtcTime;
+";
+        var sqlParameters = new
+        {
+            KeyId = id,
+            CurrentUtcTime = curTimeUtc
+        };
+        
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        var entities = await connection.QueryAsync<ConfigurationKeyEntity>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        var entity = entities.FirstOrDefault();
+
+        if (entity == null)
+        {
+            throw new EntityNotFoundException("Key entity could not be found.");
+        }
+
+        return entity;
+    }
 }

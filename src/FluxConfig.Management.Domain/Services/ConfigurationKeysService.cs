@@ -1,4 +1,5 @@
 using FluxConfig.Management.Domain.Contracts.Dal.Entities;
+using FluxConfig.Management.Domain.Contracts.Dal.Entities.Views;
 using FluxConfig.Management.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Management.Domain.Exceptions.Domain.Config;
 using FluxConfig.Management.Domain.Exceptions.Infrastructure;
@@ -13,10 +14,13 @@ namespace FluxConfig.Management.Domain.Services;
 public class ConfigurationKeysService : IConfigurationKeysService
 {
     private readonly IConfigurationKeysRepository _configurationKeysRepository;
+    private readonly IConfigurationTagsRepository _configurationTagsRepository;
 
-    public ConfigurationKeysService(IConfigurationKeysRepository configurationKeysRepository)
+    public ConfigurationKeysService(IConfigurationKeysRepository configurationKeysRepository,
+        IConfigurationTagsRepository configurationTagsRepository)
     {
         _configurationKeysRepository = configurationKeysRepository;
+        _configurationTagsRepository = configurationTagsRepository;
     }
 
     public async Task CreateNewKey(ConfigurationKeyModel keyModel, CancellationToken cancellationToken)
@@ -51,8 +55,9 @@ public class ConfigurationKeysService : IConfigurationKeysService
             entities: [entity],
             cancellationToken: cancellationToken
         );
-        
-        transaction.Complete();;
+
+        transaction.Complete();
+        ;
     }
 
     public async Task DeleteKey(string keyId, long configurationId, CancellationToken cancellationToken)
@@ -74,13 +79,13 @@ public class ConfigurationKeysService : IConfigurationKeysService
     private async Task DeleteKeyUnsafe(string keyId, long configurationId, CancellationToken cancellationToken)
     {
         using var transaction = _configurationKeysRepository.CreateTransactionScope();
-        
+
         await _configurationKeysRepository.DeleteKey(
             id: keyId,
             configurationId: configurationId,
             cancellationToken: cancellationToken
         );
-        
+
         transaction.Complete();
     }
 
@@ -89,15 +94,61 @@ public class ConfigurationKeysService : IConfigurationKeysService
         CancellationToken cancellationToken)
     {
         using var transaction = _configurationKeysRepository.CreateTransactionScope();
-        
+
         var configKeysEntities = await _configurationKeysRepository.GetAllForConfiguration(
             configurationId: configurationId,
             currentUtcTime: DateTimeOffset.UtcNow,
             cancellationToken: cancellationToken
         );
-        
+
         transaction.Complete();
 
         return configKeysEntities.MapEntitiesToModelsEnumerable().Where(m => m.RolePermission <= role).ToList();
+    }
+
+    public async Task<string> AuthenticateClientService(string apiKey, string configurationTag,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await AuthenticateClientServiceUnsafe(apiKey, configurationTag, cancellationToken);
+        }
+        catch (EntityNotFoundException ex)
+        {
+            throw new ConfigurationKeyNotFoundException(
+                message: $"Configuration key with id: {apiKey} could not be authenticated.",
+                keyId: apiKey,
+                innerException: ex
+            );
+        }
+    }
+
+    private async Task<string> AuthenticateClientServiceUnsafe(string apiKey, string configurationTag,
+        CancellationToken cancellationToken)
+    {
+        using var transaction = _configurationKeysRepository.CreateTransactionScope();
+
+        ConfigurationKeyEntity keyEntity = await _configurationKeysRepository.GetValidConfigurationKey(
+            id: apiKey,
+            curTimeUtc: DateTimeOffset.UtcNow,
+            cancellationToken: cancellationToken
+        );
+
+        ConfigurationTagsViewEntity tagsViewEntity =
+            await _configurationTagsRepository.GetTagWithConfigurationByConfigId(
+                configurationId: keyEntity.ConfigurationId,
+                tag: configurationTag,
+                cancellationToken: cancellationToken
+            );
+
+
+        if (keyEntity.RolePermission < tagsViewEntity.RequiredRole)
+        {
+            throw new EntityNotFoundException($"Configuration key with id: {apiKey} could not be authenticated.");
+        }
+
+        transaction.Complete();
+
+        return tagsViewEntity.StorageKey;
     }
 }

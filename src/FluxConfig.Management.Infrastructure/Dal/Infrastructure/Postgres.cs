@@ -36,6 +36,7 @@ public static class Postgres
                 builder.MapComposite<ConfigurationKeyEntity>("configuration_key_type", Translator);
 
                 builder.MapComposite<ConfigurationUserViewEntity>("configuration_user_view_type", Translator);
+                builder.MapComposite<ConfigurationTagsViewEntity>("configuration_tags_view_type", Translator);
                     
                 if (isDevelopment)
                 {
