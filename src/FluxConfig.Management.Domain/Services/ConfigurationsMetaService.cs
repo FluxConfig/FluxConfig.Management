@@ -71,7 +71,7 @@ public class ConfigurationsMetaService : IConfigurationsMetaService
 
         transaction.Complete();
 
-        return models;
+        return models.OrderBy(m => m.ConfigurationName).ToList();
     }
 
     public async Task ChangeConfigurationName(ChangeConfigurationNameModel changeNameModel,

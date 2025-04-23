@@ -17,6 +17,17 @@ internal static class ExceptionLoggerExtensions
         switch (exception)
         {
             // Configuration
+            case ConfigurationDataInvalidTypeException ex:
+                logger.LogInvalidConfigurationValueForTypeError(
+                    callId: callId,
+                    curTime: curTime,
+                    key: ex.Key,
+                    value: ex.Value,
+                    type: ex.Type.ToString()
+                );
+
+                break;
+
             case ConfigurationTagAlreadyExistsException ex:
                 logger.LogConfigurationTagAlreadyExistsError(
                     callId: callId,

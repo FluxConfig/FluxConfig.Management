@@ -1,3 +1,4 @@
+using FluxConfig.Management.Api.Contracts.Responses.Configurations.Data;
 using FluxConfig.Management.Api.Contracts.Responses.Configurations.General;
 using FluxConfig.Management.Api.Contracts.Responses.Configurations.Keys;
 using FluxConfig.Management.Api.Contracts.Responses.Configurations.Tags;
@@ -89,5 +90,21 @@ internal static class ConfigModelsMapper
             RequiredRole: model.RequiredRole,
             ConfigurationName: model.Name
         );
+    }
+
+    internal static ConfigurationKeyValueResponse MapModelToResponse(this ConfigurationKeyValueType model, long id)
+    {
+        return new ConfigurationKeyValueResponse(
+            Id: id,
+            Key: model.Key,
+            Value: model.Value,
+            Type: model.Type
+        );
+    }
+    
+    internal static IEnumerable<ConfigurationKeyValueResponse> MapModelsToResponses(this IReadOnlyList<ConfigurationKeyValueType> models)
+    {
+        long id = 1;
+        return models.Select(m => m.MapModelToResponse(id++));
     }
 }

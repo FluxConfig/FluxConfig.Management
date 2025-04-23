@@ -217,7 +217,7 @@ public class UserService : IUserService
 
         transaction.Complete();
 
-        return entities.OrderBy(e => e.Id).MapEntitiesToModels();
+        return entities.OrderBy(e => e.Email).MapEntitiesToModels();
     }
 
     public async Task<UserModel> GetUser(long userId, CancellationToken cancellationToken)

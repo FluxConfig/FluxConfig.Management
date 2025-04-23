@@ -193,6 +193,18 @@ internal static partial class LoggerExtensions
         long configurationId,
         string tag);
     
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        EventId = 4029,
+        Message = "[{CallId}] [{CurTime}] Invalid configuration value: {Value} for key: {Key} with type: {Type}"
+    )]
+    public static partial void LogInvalidConfigurationValueForTypeError(this ILogger logger,
+        string callId,
+        DateTime curTime,
+        string key,
+        string value,
+        string type);
+    
 
     #endregion
     

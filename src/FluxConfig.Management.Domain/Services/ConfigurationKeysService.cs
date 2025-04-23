@@ -102,7 +102,7 @@ public class ConfigurationKeysService : IConfigurationKeysService
 
         transaction.Complete();
 
-        return configKeysEntities.MapEntitiesToModelsEnumerable().Where(m => m.RolePermission <= role).ToList();
+        return configKeysEntities.MapEntitiesToModelsEnumerable().Where(m => m.RolePermission <= role).OrderBy(m => m.ExpirationDate).ToList();
     }
 
     public async Task<string> AuthenticateClientService(string apiKey, string configurationTag,

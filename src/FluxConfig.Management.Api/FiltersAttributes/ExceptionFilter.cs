@@ -29,6 +29,10 @@ public class ExceptionFilter : IExceptionFilter
         switch (context.Exception)
         {
             // Configuration
+            case ConfigurationDataInvalidTypeException ex:
+                ErrorRequestHandler.HandleInvalidConfigurationTypeValueBr(context, ex);
+                break;
+            
             case ConfigurationTagAlreadyExistsException ex:
                 ErrorRequestHandler.HandleConfigurationTagAlEConflict(context, ex);
                 break;

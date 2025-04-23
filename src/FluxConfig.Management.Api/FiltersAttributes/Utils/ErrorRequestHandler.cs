@@ -104,6 +104,23 @@ internal static class ErrorRequestHandler
     
     #region User
     
+    internal static void HandleInvalidConfigurationTypeValueBr(ExceptionContext context, ConfigurationDataInvalidTypeException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.BadRequest,
+                Message: $"Invalid configuration value: {ex.Value} for key: {ex.Key} with type {ex.Type.ToString()}",
+                Exceptions: [ex.Type.ToString()]
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.BadRequest
+        };
+
+        context.Result = result;
+    }
+    
     internal static void HandleUserNotFoundRequest(ExceptionContext context, UserNotFoundException ex)
     {
         JsonResult result = new JsonResult(

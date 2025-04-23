@@ -106,7 +106,7 @@ public class ConfigurationTagsService : IConfigurationTagsService
 
         transaction.Complete();
 
-        return entities.MapEntitiesToModels().Where(m => m.RequiredRole <= userRole).ToList();
+        return entities.MapEntitiesToModels().Where(m => m.RequiredRole <= userRole).OrderBy(m => m.Tag).ToList();
     }
 
     public async Task<ConfigurationTagsViewModel> GetTagMeta(
