@@ -32,8 +32,26 @@ internal static class EntityMapper
             Email: entity.Email
         );
     }
-    
-    internal static IReadOnlyList<ConfigurationUsersViewModel> MapEntitiesToModels(this IReadOnlyList<ConfigurationUserViewEntity> entities)
+
+    internal static IReadOnlyList<ConfigurationUsersViewModel> MapEntitiesToModels(
+        this IReadOnlyList<ConfigurationUserViewEntity> entities)
+    {
+        return entities.Select(e => e.MapEntityToModel()).ToList();
+    }
+
+    internal static UserConfigurationsViewModel MapEntityToModel(this UserConfigurationsViewEntity entity)
+    {
+        return new UserConfigurationsViewModel(
+            UserId: entity.UserId,
+            ConfigurationId: entity.ConfigurationId,
+            Role: entity.Role,
+            ConfigurationName: entity.Name,
+            ConfigurationDescription: entity.Description
+        );
+    }
+
+    internal static IReadOnlyList<UserConfigurationsViewModel> MapEntitiesToModels(
+        this IReadOnlyList<UserConfigurationsViewEntity> entities)
     {
         return entities.Select(e => e.MapEntityToModel()).ToList();
     }

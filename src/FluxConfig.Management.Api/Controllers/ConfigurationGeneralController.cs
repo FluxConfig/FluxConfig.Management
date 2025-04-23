@@ -3,6 +3,8 @@ using FluxConfig.Management.Api.Contracts.Responses.Configurations.General;
 using FluxConfig.Management.Api.FiltersAttributes;
 using FluxConfig.Management.Api.FiltersAttributes.Auth;
 using FluxConfig.Management.Api.FiltersAttributes.Auth.Contexts;
+using FluxConfig.Management.Api.Mappers.Models;
+using FluxConfig.Management.Domain.Models.Configuration;
 using FluxConfig.Management.Domain.Models.Enums;
 using FluxConfig.Management.Domain.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +13,7 @@ namespace FluxConfig.Management.Api.Controllers;
 
 [ApiController]
 [Route("configurations")]
-public class ConfigurationGeneralController: ControllerBase
+public class ConfigurationGeneralController : ControllerBase
 {
     private readonly IConfigurationsMetaService _configurationsMetaService;
     private readonly IRequestAuthContext _requestAuthContext;
@@ -49,7 +51,7 @@ public class ConfigurationGeneralController: ControllerBase
         await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
         throw new NotImplementedException();
     }
-    
+
     [HttpPatch]
     [Route("change/description")]
     [Auth(RequiredRole = UserGlobalRole.Member)]
@@ -63,7 +65,7 @@ public class ConfigurationGeneralController: ControllerBase
         await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
         throw new NotImplementedException();
     }
-    
+
     [HttpDelete]
     [Route("delete")]
     [Auth(RequiredRole = UserGlobalRole.Member)]
@@ -89,8 +91,8 @@ public class ConfigurationGeneralController: ControllerBase
         await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
         throw new NotImplementedException();
     }
-    
-    
+
+
     [HttpGet]
     [Route("get-all")]
     [Auth(RequiredRole = UserGlobalRole.Member)]
@@ -98,9 +100,12 @@ public class ConfigurationGeneralController: ControllerBase
     [ErrorResponseType(401)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        // TODO: В случае когда пользователь админ позвращать вообще всё 
-        
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        IReadOnlyList<UserConfigurationsViewModel> models = await _configurationsMetaService.GetUserConfigurations(
+            userId: _requestAuthContext.User!.Id,
+            userRole: _requestAuthContext.User.Role,
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(models.MapModelsToResponsesAll());
     }
 }

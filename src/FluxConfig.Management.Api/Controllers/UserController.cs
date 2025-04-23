@@ -4,6 +4,7 @@ using FluxConfig.Management.Api.FiltersAttributes;
 using FluxConfig.Management.Api.FiltersAttributes.Auth;
 using FluxConfig.Management.Api.FiltersAttributes.Auth.Contexts;
 using FluxConfig.Management.Api.Mappers.Models;
+using FluxConfig.Management.Domain.Models.Configuration;
 using FluxConfig.Management.Domain.Models.Enums;
 using FluxConfig.Management.Domain.Models.User;
 using FluxConfig.Management.Domain.Services.Interfaces;
@@ -16,11 +17,16 @@ namespace FluxConfig.Management.Api.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IConfigurationsMetaService _configurationsMetaService;
     private readonly IRequestAuthContext _requestAuthAuthContext;
 
-    public UserController(IUserService userService, IRequestAuthContext requestAuthAuthContext)
+    public UserController(
+        IUserService userService,
+        IConfigurationsMetaService configurationsMetaService,
+        IRequestAuthContext requestAuthAuthContext)
     {
         _userService = userService;
+        _configurationsMetaService = configurationsMetaService;
         _requestAuthAuthContext = requestAuthAuthContext;
     }
 
@@ -143,8 +149,8 @@ public class UserController : ControllerBase
     [Route("admin/change-user-role")]
     [Auth(RequiredRole = UserGlobalRole.Admin)]
     [ProducesResponseType<ChangeUserRoleResponse>(200)]
-    [ErrorResponseType(401)]
     [ErrorResponseType(400)]
+    [ErrorResponseType(401)]
     [ErrorResponseType(404)]
     public async Task<IActionResult> ChangeUserRole(ChangeUserRoleRequest request,
         CancellationToken cancellationToken)
@@ -168,8 +174,19 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetUserWithConfigs([FromQuery] GetUserWithConfigurationsRequest request,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        UserModel user = await _userService.GetUser(
+            userId: request.Id,
+            cancellationToken: cancellationToken
+        );
+
+        IReadOnlyList<UserConfigurationsViewModel> configModels =
+            await _configurationsMetaService.GetUserConfigurations(
+                userId: user.Id,
+                userRole: user.Role,
+                cancellationToken: cancellationToken
+            );
+
+        return Ok(user.MapModelToGetWithConfigsResponse(configModels));
     }
 
     # endregion

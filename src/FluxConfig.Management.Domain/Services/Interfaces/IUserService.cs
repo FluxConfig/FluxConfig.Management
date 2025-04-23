@@ -11,4 +11,5 @@ public interface IUserService
     public Task ChangeUserRole(UserGlobalRole newRole, long userId, long adminId, CancellationToken cancellationToken);
     public Task DeleteUser(long userId, CancellationToken cancellationToken);
     public Task<IReadOnlyList<UserModel>> GetAllUsers(CancellationToken cancellationToken);
+    public Task<UserModel> GetUser(long userId, CancellationToken cancellationToken);
 }

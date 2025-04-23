@@ -219,4 +219,35 @@ public class UserService : IUserService
 
         return entities.OrderBy(e => e.Id).MapEntitiesToModels();
     }
+
+    public async Task<UserModel> GetUser(long userId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await GetUserUnsafe(userId, cancellationToken);
+        }
+        catch (EntityNotFoundException ex)
+        {
+            throw new UserNotFoundException(
+                message: $"Unable to find user with  id: {userId}.",
+                invalidEmail: null,
+                id: userId,
+                innerException: ex
+            );
+        }
+    }
+
+    private async Task<UserModel> GetUserUnsafe(long userId, CancellationToken cancellationToken)
+    {
+        using var transaction = _userRepository.CreateTransactionScope();
+
+        var userEntity = await _userRepository.GetUserById(
+            userId: userId,
+            cancellationToken: cancellationToken
+        );
+
+        transaction.Complete();
+
+        return userEntity.MapEntityToModel();
+    }
 }

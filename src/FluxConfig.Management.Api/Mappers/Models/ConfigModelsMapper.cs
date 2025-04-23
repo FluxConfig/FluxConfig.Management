@@ -1,3 +1,4 @@
+using FluxConfig.Management.Api.Contracts.Responses.Configurations.General;
 using FluxConfig.Management.Api.Contracts.Responses.Configurations.Keys;
 using FluxConfig.Management.Api.Contracts.Responses.Configurations.Users;
 using FluxConfig.Management.Domain.Models.Configuration;
@@ -30,9 +31,25 @@ internal static class ConfigModelsMapper
             Role: model.Role
         );
     }
-    
-    internal static IEnumerable<GetConfigurationUserResponse> MapModelsToResponses(this IReadOnlyList<ConfigurationUsersViewModel> models)
+
+    internal static IEnumerable<GetConfigurationUserResponse> MapModelsToResponses(
+        this IReadOnlyList<ConfigurationUsersViewModel> models)
     {
         return models.Select(m => m.MapModelToResponse());
+    }
+
+    internal static GetUserConfigurationMetaResponse MapModelToResponseAll(this UserConfigurationsViewModel model)
+    {
+        return new GetUserConfigurationMetaResponse(
+            Id: model.ConfigurationId,
+            Name: model.ConfigurationName,
+            UserRole: model.Role
+        );
+    }
+
+    internal static IEnumerable<GetUserConfigurationMetaResponse> MapModelsToResponsesAll(
+        this IReadOnlyList<UserConfigurationsViewModel> models)
+    {
+        return models.Select(e => e.MapModelToResponseAll());
     }
 }

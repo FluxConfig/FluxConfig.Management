@@ -1,6 +1,10 @@
+using FluxConfig.Management.Domain.Contracts.Dal.Entities;
+using FluxConfig.Management.Domain.Contracts.Dal.Entities.Views;
+
 namespace FluxConfig.Management.Domain.Contracts.Dal.Interfaces;
 
 public interface IConfigurationsRepository: IDbRepository
 {
-    
+    public Task<IReadOnlyList<UserConfigurationsViewEntity>> GetUserConfigurations(long userId, CancellationToken cancellationToken);
+    public Task<IReadOnlyList<ConfigurationEntity>> GetAllConfigurations(CancellationToken cancellationToken);
 }
