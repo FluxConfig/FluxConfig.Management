@@ -29,6 +29,10 @@ public class ExceptionFilter : IExceptionFilter
         switch (context.Exception)
         {
             // Configuration
+            case ConfigurationTagAlreadyExistsException ex:
+                ErrorRequestHandler.HandleConfigurationTagAlEConflict(context, ex);
+                break;
+            
             case UserConfigUnauthorizedException ex:
                 ErrorRequestHandler.HandleUserConfigActionUnauthorizedRequest(context, ex);
                 break;

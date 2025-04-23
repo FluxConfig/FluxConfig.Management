@@ -12,4 +12,8 @@ public interface IConfigurationsRepository: IDbRepository
 
     public Task<UserConfigurationsViewEntity> GetUserConfigurationById(long userId, long configurationId,
         CancellationToken cancellationToken);
+
+    public Task<ConfigurationEntity> GetConfigurationById(long configurationId, CancellationToken cancellationToken);
+    public Task<long> Create(ConfigurationEntity entity, CancellationToken cancellationToken);
+    public Task Delete(long configurationId, CancellationToken cancellationToken);
 }

@@ -53,9 +53,13 @@ public class AddConfigurationsScheme: Migration
         Create.Table("configuration_tags")
             .WithColumn("id").AsInt64().PrimaryKey("configuration_tags_pk").Identity()
             .WithColumn("configuration_id").AsInt64().NotNullable()
-            .WithColumn("tag").AsString(30).NotNullable().Unique()
+            .WithColumn("tag").AsString(30).NotNullable()
             .WithColumn("description").AsString(500).NotNullable()
             .WithColumn("required_role").AsCustom("user_config_role_enum").NotNullable();
+
+        Create.UniqueConstraint("uq_configuration_tags_configuration_id_tag")
+            .OnTable("configuration_tags")
+            .Columns("configuration_id", "tag");
         
         Create.ForeignKey("FK_configuration_tags_conf_id")
             .FromTable("configuration_tags").ForeignColumn("configuration_id")

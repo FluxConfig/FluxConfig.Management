@@ -85,7 +85,7 @@ public class ConfigurationUsersService : IConfigurationUsersService
             );
         }
     }
-
+    
     private async Task AddUserToConfigurationUnsafe(long configurationId, string userEmail,
         CancellationToken cancellationToken)
     {
@@ -122,12 +122,47 @@ public class ConfigurationUsersService : IConfigurationUsersService
 
         transaction.Complete();
     }
-
-    public async Task ChangeUserConfigurationRole(UserConfigurationRoleModel model, CancellationToken cancellationToken)
+    
+    public async Task AddUserToConfiguration(UserConfigurationRoleModel model, CancellationToken cancellationToken)
     {
         try
         {
-            await ChangeUserConfigurationRoleUnsafe(model, cancellationToken);
+            await AddUserToConfigurationUnsafe(model, cancellationToken);
+        }
+        catch (EntityNotFoundException ex)
+        {
+            throw new ConfigurationNotFoundException(
+                message: $"Configuration with id: {model.ConfigurationId} could not be found.",
+                configurationId: model.UserId,
+                innerException: ex
+            );
+        }
+    }
+    
+    private async Task AddUserToConfigurationUnsafe(UserConfigurationRoleModel model, CancellationToken cancellationToken)
+    {
+        using var transaction = _userConfigurationRepository.CreateTransactionScope();
+        
+        UserConfigurationEntity roleEntity = new UserConfigurationEntity
+        {
+            ConfigurationId = model.ConfigurationId,
+            Role = model.Role,
+            UserId = model.UserId
+        };
+
+        await _userConfigurationRepository.AddUsersToConfiguration(
+            entities: [roleEntity],
+            cancellationToken: cancellationToken
+        );
+
+        transaction.Complete();
+    }
+
+    public async Task ChangeUserConfigurationRole(UserConfigurationRoleModel model, long adminId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await ChangeUserConfigurationRoleUnsafe(model, adminId, cancellationToken);
         }
         catch (EntityNotFoundException ex)
         {
@@ -141,9 +176,16 @@ public class ConfigurationUsersService : IConfigurationUsersService
         }
     }
 
-    private async Task ChangeUserConfigurationRoleUnsafe(UserConfigurationRoleModel model,
+    private async Task ChangeUserConfigurationRoleUnsafe(UserConfigurationRoleModel model, long adminId,
         CancellationToken cancellationToken)
     {
+        if (model.UserId == adminId)
+        {
+            throw new AdminChangeHisRoleException(
+                message: "Unable to change admin role.",
+                adminId: adminId);
+        }
+        
         using var transaction = _userConfigurationRepository.CreateTransactionScope();
 
         await _userConfigurationRepository.UpdateUserConfigRole(

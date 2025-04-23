@@ -1,4 +1,4 @@
-namespace FluxConfig.Management.Infrastructure.ISC.Clients.Interfaces;
+namespace FluxConfig.Management.Domain.Contracts.ISC.Interfaces;
 
 public interface IFluxConfigStorageClient
 {

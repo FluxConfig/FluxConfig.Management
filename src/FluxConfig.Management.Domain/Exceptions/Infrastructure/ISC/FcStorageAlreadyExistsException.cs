@@ -1,6 +1,5 @@
 namespace FluxConfig.Management.Domain.Exceptions.Infrastructure.ISC;
 
-// TODO: Преобразовывать в локальный тип если надо
 public class FcStorageAlreadyExistsException: InfrastructureException
 {
     public string Tag { get; }

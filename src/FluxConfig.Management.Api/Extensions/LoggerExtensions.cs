@@ -182,6 +182,17 @@ internal static partial class LoggerExtensions
         DateTime curTime,
         long adminId);
     
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        EventId = 4028,
+        Message = "[{CallId}] [{CurTime}] Configuration tag: {Tag} for configuration with id: {ConfigurationId} already exists"
+    )]
+    public static partial void LogConfigurationTagAlreadyExistsError(this ILogger logger,
+        string callId,
+        DateTime curTime,
+        long configurationId,
+        string tag);
+    
 
     #endregion
     

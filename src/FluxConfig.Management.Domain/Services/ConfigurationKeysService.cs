@@ -57,7 +57,6 @@ public class ConfigurationKeysService : IConfigurationKeysService
         );
 
         transaction.Complete();
-        ;
     }
 
     public async Task DeleteKey(string keyId, long configurationId, CancellationToken cancellationToken)

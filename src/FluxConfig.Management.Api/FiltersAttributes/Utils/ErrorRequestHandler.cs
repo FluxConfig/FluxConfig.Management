@@ -15,6 +15,23 @@ internal static class ErrorRequestHandler
 {
     # region Configuration
     
+    internal  static void HandleConfigurationTagAlEConflict(ExceptionContext context, ConfigurationTagAlreadyExistsException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.Conflict,
+                Message: $"Configuration tag: {ex.Tag} already exists.",
+                Exceptions: [ex.Tag]
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.Conflict
+        };
+
+        context.Result = result;
+    }
+    
     internal static void HandleConfigurationNotFoundRequest(ExceptionContext context, ConfigurationNotFoundException ex)
     {
         JsonResult result = new JsonResult(

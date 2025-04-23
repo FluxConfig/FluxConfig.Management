@@ -30,14 +30,24 @@ public class ConfigurationTagsController : ControllerBase
     [Route("create")]
     [ConfigAuth(RequiredRole = UserConfigRole.Admin)]
     [ProducesResponseType<AddConfigurationTagResponse>(200)]
-    [ErrorResponseType(400)] // TODO: Проверяю сам
+    [ErrorResponseType(400)]
     [ErrorResponseType(401)]
-    [ErrorResponseType(404)] // TODO: Если конфигурации нет
-    [ErrorResponseType(409)] // TODO: Проверяю сам или получаю от storage
+    [ErrorResponseType(404)] 
+    [ErrorResponseType(409)]
     public async Task<IActionResult> CreateTag(AddConfigurationTagRequest request, CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _configurationTagsService.CreateTag(
+            model: new ConfigurationTagModel(
+                Id: -1,
+                ConfigurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId,
+                Tag: request.Tag,
+                Description: request.Description,
+                RequiredRole: request.RequiredRole
+            ),
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new AddConfigurationTagResponse());
     }
 
     [HttpPatch]
@@ -84,8 +94,12 @@ public class ConfigurationTagsController : ControllerBase
     [ErrorResponseType(404)]
     public async Task<IActionResult> Delete(DeleteConfigurationTagRequest request, CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _configurationTagsService.DeleteTag(
+            tagId: request.TagId,
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new DeleteConfigurationTagResponse());
     }
 
     [HttpGet]

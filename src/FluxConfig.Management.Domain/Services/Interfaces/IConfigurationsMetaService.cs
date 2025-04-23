@@ -10,6 +10,8 @@ public interface IConfigurationsMetaService
     public Task ChangeConfigurationName(ChangeConfigurationNameModel changeNameModel ,CancellationToken cancellationToken);
     public Task ChangeConfigurationDescription(long configurationId, string newDescription,
         CancellationToken cancellationToken);
-    public Task<UserConfigurationsViewModel> GetUserConfiguration(long userId, long configurationId,
+    public Task<UserConfigurationsViewModel> GetUserConfiguration(long userId, long configurationId, UserGlobalRole role,
         CancellationToken cancellationToken);
+    public Task CreateNewConfiguration(ConfigurationModel model, long initiatorUserId, CancellationToken cancellationToken);
+    public Task DeleteConfiguration(long configurationId, CancellationToken cancellationToken);
 }

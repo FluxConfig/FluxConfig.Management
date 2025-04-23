@@ -14,4 +14,6 @@ public interface IConfigurationTagsRepository: IDbRepository
         CancellationToken cancellationToken);
     public Task UpdateTagDescription(long tagId, string newDescription, CancellationToken cancellationToken);
     public Task UpdateTagRequiredRole(long tagId, UserConfigRole newRole, CancellationToken cancellationToken);
+    public Task CreateConfigurationTags(ConfigurationTagEntity[] entities, CancellationToken cancellationToken);
+    public Task DeleteConfigurationTag(long tagId, CancellationToken cancellationToken);
 }

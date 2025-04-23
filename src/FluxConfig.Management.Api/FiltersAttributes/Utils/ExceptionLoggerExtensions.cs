@@ -17,6 +17,15 @@ internal static class ExceptionLoggerExtensions
         switch (exception)
         {
             // Configuration
+            case ConfigurationTagAlreadyExistsException ex:
+                logger.LogConfigurationTagAlreadyExistsError(
+                    callId: callId,
+                    curTime: curTime,
+                    configurationId: ex.ConfigurationId,
+                    tag: ex.Tag
+                );
+                break;
+
             case UserConfigUnauthorizedException ex:
                 logger.LogUserUnauthenticatedError(
                     callId: callId,
@@ -25,7 +34,7 @@ internal static class ExceptionLoggerExtensions
                 );
 
                 break;
-            
+
             case UserDoesntBelongToConfigException ex:
                 logger.LogUserDoesntBelongToConfigError(
                     callId: callId,
@@ -84,15 +93,15 @@ internal static class ExceptionLoggerExtensions
 
             // Auth / credentials
             case AdminChangeHisRoleException ex:
-                
+
                 logger.LogAdminChangeHisRoleBadRequest(
                     callId: callId,
                     curTime: curTime,
                     adminId: ex.AdminId
-                    );
-                
+                );
+
                 break;
-            
+
             case InvalidUserCredentialsException ex:
 
                 logger.LogInvalidUserCredentialsError(

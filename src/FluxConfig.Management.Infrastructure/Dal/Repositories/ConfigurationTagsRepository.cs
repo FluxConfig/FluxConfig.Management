@@ -163,4 +163,72 @@ UPDATE configuration_tags
             throw new EntityNotFoundException("Configuration tag entity could not be found.");
         }
     }
+
+    public async Task CreateConfigurationTags(ConfigurationTagEntity[] entities, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+INSERT INTO configuration_tags (configuration_id, tag, description, required_role) 
+    SELECT configuration_id, tag, description, required_role
+    FROM UNNEST(@Entities::configuration_tag_type[]);
+";
+
+        var sqlParameters = new
+        {
+            Entities = entities
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        try
+        {
+            await connection.QueryAsync<ConfigurationTagEntity>(
+                new CommandDefinition(
+                    commandText: sqlQuery,
+                    parameters: sqlParameters,
+                    cancellationToken: cancellationToken
+                )
+            );
+        }
+        catch (NpgsqlException ex)
+        {
+            if (ex.SqlState == "23503")
+            {
+                throw new EntityNotFoundException("Configuration Foreign key not found.");
+            }
+            if (ex.SqlState == "23505")
+            {
+                throw new EntityAlreadyExistsException("Entity already exists.");
+            }
+
+            throw;
+        }
+    }
+
+    public async Task DeleteConfigurationTag(long tagId, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+DELETE FROM configuration_tags
+    WHERE id = @TagId
+    RETURNING id;
+";
+        var sqlParameters = new
+        {
+            TagId = tagId
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        var deletedIds = await connection.QueryAsync<long>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        if (!deletedIds.Any())
+        {
+            throw new EntityNotFoundException("Configuration Tag entity could not be found.");
+        }
+    }
 }

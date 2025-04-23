@@ -9,7 +9,8 @@ public interface IConfigurationUsersService
         CancellationToken cancellationToken);
 
     public Task AddUserToConfiguration(long configurationId, string userEmail, CancellationToken cancellationToken);
-    public Task ChangeUserConfigurationRole(UserConfigurationRoleModel model, CancellationToken cancellationToken);
+    public Task AddUserToConfiguration(UserConfigurationRoleModel model, CancellationToken cancellationToken);
+    public Task ChangeUserConfigurationRole(UserConfigurationRoleModel model, long adminId, CancellationToken cancellationToken);
     public Task DeleteUserFromConfiguration(UserConfigurationRoleModel model, CancellationToken cancellationToken);
     public Task<IReadOnlyList<ConfigurationUsersViewModel>> GetConfigurationMembers(long configurationId,
         CancellationToken cancellationToken);

@@ -47,6 +47,7 @@ public class ConfigurationUsersController : ControllerBase
     [Route("change-role")]
     [ConfigAuth(RequiredRole = UserConfigRole.Admin)]
     [ProducesResponseType<ChangeUserConfigurationRoleResponse>(200)]
+    [ErrorResponseType(400)]
     [ErrorResponseType(401)]
     [ErrorResponseType(404)]
     public async Task<IActionResult> ChangeRole(ChangeUserConfigurationRoleRequest request,
@@ -58,6 +59,7 @@ public class ConfigurationUsersController : ControllerBase
                 Role: request.NewRole,
                 ConfigurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId
             ),
+            adminId: _requestAuthContext.User!.Id,
             cancellationToken: cancellationToken
         );
 

@@ -29,12 +29,22 @@ public class ConfigurationGeneralController : ControllerBase
     [Route("create")]
     [Auth(RequiredRole = UserGlobalRole.Trusted)]
     [ProducesResponseType<CreateConfigurationResponse>(200)]
-    [ErrorResponseType(400)] // TODO: Проверять только имя
+    [ErrorResponseType(400)]
     [ErrorResponseType(401)]
     public async Task<IActionResult> CreateNew(CreateConfigurationRequest request, CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _configurationsMetaService.CreateNewConfiguration(
+            model: new ConfigurationModel(
+                Id: -1,
+                StorageKey: "",
+                Name: request.Name,
+                Description: request.Description
+            ),
+            initiatorUserId: _requestAuthContext.User!.Id,
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new CreateConfigurationResponse());
     }
 
     [HttpPatch]
@@ -87,8 +97,12 @@ public class ConfigurationGeneralController : ControllerBase
     [ErrorResponseType(404)]
     public async Task<IActionResult> Delete(CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _configurationsMetaService.DeleteConfiguration(
+            configurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId,
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new DeleteConfigurationResponse());
     }
 
     [HttpGet]
@@ -103,6 +117,7 @@ public class ConfigurationGeneralController : ControllerBase
         UserConfigurationsViewModel model = await _configurationsMetaService.GetUserConfiguration(
             userId: _requestAuthContext.User!.Id,
             configurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId,
+            role: _requestAuthContext.User.Role,
             cancellationToken: cancellationToken
         );
 

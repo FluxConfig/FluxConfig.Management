@@ -10,4 +10,6 @@ public interface IConfigurationTagsService
     public Task<IReadOnlyList<ConfigurationTagModel>> GetConfigurationTags(long configurationId, UserConfigRole userRole,
         CancellationToken cancellationToken);
     public Task<ConfigurationTagsViewModel> GetTagMeta(long tagId, long userId, UserGlobalRole userRole, CancellationToken cancellationToken);
+    public Task CreateTag(ConfigurationTagModel model, CancellationToken cancellationToken);
+    public Task DeleteTag(long tagId, CancellationToken cancellationToken);
 }

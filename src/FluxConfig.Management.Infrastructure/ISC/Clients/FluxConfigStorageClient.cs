@@ -1,5 +1,5 @@
+using FluxConfig.Management.Domain.Contracts.ISC.Interfaces;
 using FluxConfig.Management.Domain.Exceptions.Infrastructure;
-using FluxConfig.Management.Infrastructure.ISC.Clients.Interfaces;
 using FluxConfig.Management.Infrastructure.ISC.Extensions;
 using FluxConfig.Management.Infrastructure.ISC.GrpcContracts.Storage;
 using Grpc.Core;

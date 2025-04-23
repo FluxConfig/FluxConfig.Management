@@ -1,10 +1,10 @@
 using FluxConfig.Management.Domain.Contracts.Dal.Interfaces;
+using FluxConfig.Management.Domain.Contracts.ISC.Interfaces;
 using FluxConfig.Management.Infrastructure.Configuration;
 using FluxConfig.Management.Infrastructure.Configuration.Options.Enums;
 using FluxConfig.Management.Infrastructure.Dal.Infrastructure;
 using FluxConfig.Management.Infrastructure.Dal.Repositories;
 using FluxConfig.Management.Infrastructure.ISC.Clients;
-using FluxConfig.Management.Infrastructure.ISC.Clients.Interfaces;
 using FluxConfig.Management.Infrastructure.ISC.GrpcContracts.Storage;
 using Grpc.Core;
 using Grpc.Net.Client.Configuration;
