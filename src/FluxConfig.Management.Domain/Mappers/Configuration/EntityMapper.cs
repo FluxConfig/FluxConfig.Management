@@ -55,4 +55,35 @@ internal static class EntityMapper
     {
         return entities.Select(e => e.MapEntityToModel()).ToList();
     }
+
+    private static ConfigurationTagModel MapEntityToModel(this ConfigurationTagEntity entity)
+    {
+        return new ConfigurationTagModel(
+            Id: entity.Id,
+            ConfigurationId: entity.ConfigurationId,
+            Tag: entity.Tag,
+            Description: entity.Description,
+            RequiredRole: entity.RequiredRole
+        );
+    }
+
+    internal static IEnumerable<ConfigurationTagModel> MapEntitiesToModels(
+        this IReadOnlyList<ConfigurationTagEntity> entities)
+    {
+        return entities.Select(e => e.MapEntityToModel());
+    }
+
+    internal static ConfigurationTagsViewModel MapEntityToModel(this ConfigurationTagsViewEntity entity)
+    {
+        return new ConfigurationTagsViewModel(
+            ConfigurationId: entity.ConfigurationId,
+            Name: entity.Name,
+            StorageKey: entity.StorageKey,
+            ConfigurationDescription: entity.ConfigurationDescription,
+            TagId: entity.TagId,
+            TagName: entity.TagName,
+            RequiredRole: entity.RequiredRole,
+            TagDescription: entity.TagDescription
+        );
+    }
 }

@@ -17,6 +17,15 @@ internal static class ExceptionLoggerExtensions
         switch (exception)
         {
             // Configuration
+            case UserConfigUnauthorizedException ex:
+                logger.LogUserUnauthenticatedError(
+                    callId: callId,
+                    curTime: curTime,
+                    reason: ex.Reason
+                );
+
+                break;
+            
             case UserDoesntBelongToConfigException ex:
                 logger.LogUserDoesntBelongToConfigError(
                     callId: callId,

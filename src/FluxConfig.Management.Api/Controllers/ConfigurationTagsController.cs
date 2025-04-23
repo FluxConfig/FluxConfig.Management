@@ -3,6 +3,8 @@ using FluxConfig.Management.Api.Contracts.Responses.Configurations.Tags;
 using FluxConfig.Management.Api.FiltersAttributes;
 using FluxConfig.Management.Api.FiltersAttributes.Auth;
 using FluxConfig.Management.Api.FiltersAttributes.Auth.Contexts;
+using FluxConfig.Management.Api.Mappers.Models;
+using FluxConfig.Management.Domain.Models.Configuration;
 using FluxConfig.Management.Domain.Models.Enums;
 using FluxConfig.Management.Domain.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +19,8 @@ public class ConfigurationTagsController : ControllerBase
     private readonly IConfigurationTagsService _configurationTagsService;
     private readonly IRequestAuthContext _requestAuthContext;
 
-    public ConfigurationTagsController(IConfigurationTagsService configurationTagsService, IRequestAuthContext requestAuthContext)
+    public ConfigurationTagsController(IConfigurationTagsService configurationTagsService,
+        IRequestAuthContext requestAuthContext)
     {
         _configurationTagsService = configurationTagsService;
         _requestAuthContext = requestAuthContext;
@@ -41,14 +44,18 @@ public class ConfigurationTagsController : ControllerBase
     [Route("change/description")]
     [ConfigAuth(RequiredRole = UserConfigRole.Admin)]
     [ProducesResponseType<ChangeConfigurationTagDescriptionResponse>(200)]
-    [ErrorResponseType(400)]
     [ErrorResponseType(401)]
     [ErrorResponseType(404)]
     public async Task<IActionResult> ChangeDescription(ChangeConfigurationTagDescriptionRequest request,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _configurationTagsService.ChangeTagDescription(
+            tagId: request.TagId,
+            newDescription: request.NewDescription,
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new ChangeConfigurationTagDescriptionResponse());
     }
 
     [HttpPatch]
@@ -60,8 +67,13 @@ public class ConfigurationTagsController : ControllerBase
     public async Task<IActionResult> ChangeRequiredRole(ChangeConfigurationTagRoleRequest request,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _configurationTagsService.ChangeTagRequiredRole(
+            tagId: request.TagId,
+            newRole: request.NewRole,
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new ChangeConfigurationTagRoleResponse());
     }
 
     [HttpDelete]
@@ -84,9 +96,14 @@ public class ConfigurationTagsController : ControllerBase
     public async Task<IActionResult> GetMeta([FromQuery] GetConfigurationTagMetaRequest request,
         CancellationToken cancellationToken)
     {
-        //TODO: валидировать внутри по требуемой роли тэга
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        ConfigurationTagsViewModel model = await _configurationTagsService.GetTagMeta(
+            tagId: request.TagId,
+            userId: _requestAuthContext.User!.Id,
+            userRole: _requestAuthContext.User.Role,
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(model.MapModelToMetaResponse());
     }
 
     [HttpGet]
@@ -96,8 +113,12 @@ public class ConfigurationTagsController : ControllerBase
     [ErrorResponseType(401)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        // TODO: Получать только данные по праву тэги
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        var models = await _configurationTagsService.GetConfigurationTags(
+            configurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId,
+            userRole: _requestAuthContext.ConfigurationRole!.Role,
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(models.MapModelsToResponses());
     }
 }

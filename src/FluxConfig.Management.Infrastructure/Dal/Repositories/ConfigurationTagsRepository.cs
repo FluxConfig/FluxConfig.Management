@@ -1,7 +1,9 @@
 using Dapper;
+using FluxConfig.Management.Domain.Contracts.Dal.Entities;
 using FluxConfig.Management.Domain.Contracts.Dal.Entities.Views;
 using FluxConfig.Management.Domain.Contracts.Dal.Interfaces;
 using FluxConfig.Management.Domain.Exceptions.Infrastructure;
+using FluxConfig.Management.Domain.Models.Enums;
 using Npgsql;
 
 namespace FluxConfig.Management.Infrastructure.Dal.Repositories;
@@ -40,9 +42,125 @@ SELECT * FROM configuration_tags_view
 
         if (entity == null)
         {
-            throw new EntityNotFoundException("Tag entity could not be found.");
+            throw new EntityNotFoundException("Configuration tag entity could not be found.");
         }
 
         return entity;
+    }
+
+    public async Task<ConfigurationTagsViewEntity> GetTagWithConfigurationByTagId(long tagId, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+SELECT * FROM configuration_tags_view
+    WHERE tag_id = @TagId;
+";
+        var sqlParameters = new
+        {
+            TagId = tagId
+        };
+        
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        var entities = await connection.QueryAsync<ConfigurationTagsViewEntity>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        var entity = entities.FirstOrDefault();
+
+        if (entity == null)
+        {
+            throw new EntityNotFoundException("Configuration tag entity could not be found.");
+        }
+
+        return entity;
+    }
+
+    public async Task<IReadOnlyList<ConfigurationTagEntity>> GetConfigurationTags(long configurationId, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+SELECT * FROM configuration_tags
+    WHERE configuration_id = @ConfigId;
+";
+        var sqlParameters = new
+        {
+            ConfigId = configurationId
+        };
+        
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        var entities = await connection.QueryAsync<ConfigurationTagEntity>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        return entities.ToList();
+    }
+
+    public async Task UpdateTagDescription(long tagId, string newDescription, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+UPDATE configuration_tags
+    SET description = @NewDescription
+    WHERE id = @TagId
+    RETURNING id;
+";
+
+        var sqlParameters = new
+        {
+            NewDescription = newDescription,
+            TagId = tagId
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        var updatedIds = await connection.QueryAsync<long>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        if (!updatedIds.Any())
+        {
+            throw new EntityNotFoundException("Configuration tag entity could not be found.");
+        }
+    }
+
+    public async Task UpdateTagRequiredRole(long tagId, UserConfigRole newRole, CancellationToken cancellationToken)
+    {
+        const string sqlQuery = @"
+UPDATE configuration_tags
+    SET required_role = @NewRole::user_config_role_enum
+    WHERE id = @TagId
+    RETURNING id;
+";
+        var sqlParameters = new
+        {
+            NewRole = newRole.ToString().ToLower(),
+            TagId = tagId
+        };
+
+        await using NpgsqlConnection connection = await GetAndOpenConnection(cancellationToken);
+
+        var editedIds = await connection.QueryAsync<long>(
+            new CommandDefinition(
+                commandText: sqlQuery,
+                parameters: sqlParameters,
+                cancellationToken: cancellationToken
+            )
+        );
+
+        if (!editedIds.Any())
+        {
+            throw new EntityNotFoundException("Configuration tag entity could not be found.");
+        }
     }
 }

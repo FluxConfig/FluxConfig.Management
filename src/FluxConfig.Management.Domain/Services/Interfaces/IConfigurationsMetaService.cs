@@ -7,4 +7,9 @@ public interface IConfigurationsMetaService
 {
     public Task<IReadOnlyList<UserConfigurationsViewModel>> GetUserConfigurations(long userId, UserGlobalRole userRole,
         CancellationToken cancellationToken);
+    public Task ChangeConfigurationName(ChangeConfigurationNameModel changeNameModel ,CancellationToken cancellationToken);
+    public Task ChangeConfigurationDescription(long configurationId, string newDescription,
+        CancellationToken cancellationToken);
+    public Task<UserConfigurationsViewModel> GetUserConfiguration(long userId, long configurationId,
+        CancellationToken cancellationToken);
 }

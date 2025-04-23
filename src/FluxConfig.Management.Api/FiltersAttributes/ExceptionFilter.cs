@@ -29,6 +29,10 @@ public class ExceptionFilter : IExceptionFilter
         switch (context.Exception)
         {
             // Configuration
+            case UserConfigUnauthorizedException ex:
+                ErrorRequestHandler.HandleUserConfigActionUnauthorizedRequest(context, ex);
+                break;
+            
             case UserDoesntBelongToConfigException ex:
                 ErrorRequestHandler.HandleUserDoesntBelongToConfigNotFoundRequest(context, ex);
                 break;

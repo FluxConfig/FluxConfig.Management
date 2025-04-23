@@ -48,8 +48,15 @@ public class ConfigurationGeneralController : ControllerBase
     public async Task<IActionResult> ChangeName(ChangeConfigurationNameRequest request,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _configurationsMetaService.ChangeConfigurationName(
+            changeNameModel: new ChangeConfigurationNameModel(
+                NewName: request.NewName.Trim(),
+                ConfigurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId
+            ),
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new ChangeConfigurationNameResponse());
     }
 
     [HttpPatch]
@@ -62,8 +69,13 @@ public class ConfigurationGeneralController : ControllerBase
     public async Task<IActionResult> ChangeDescription(ChangeConfigurationDescriptionRequest request,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        await _configurationsMetaService.ChangeConfigurationDescription(
+            configurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId,
+            newDescription: request.NewDescription,
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(new ChangeConfigurationDescriptionResponse());
     }
 
     [HttpDelete]
@@ -88,8 +100,13 @@ public class ConfigurationGeneralController : ControllerBase
     [ErrorResponseType(404)]
     public async Task<IActionResult> GetMeta(CancellationToken cancellationToken)
     {
-        await Task.Delay(TimeSpan.FromMicroseconds(1), cancellationToken);
-        throw new NotImplementedException();
+        UserConfigurationsViewModel model = await _configurationsMetaService.GetUserConfiguration(
+            userId: _requestAuthContext.User!.Id,
+            configurationId: _requestAuthContext.ConfigurationRole!.ConfigurationId,
+            cancellationToken: cancellationToken
+        );
+
+        return Ok(model.MapModelToMetaResponse());
     }
 
 

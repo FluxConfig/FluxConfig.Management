@@ -193,6 +193,23 @@ internal static class ErrorRequestHandler
         context.Result = result;
     }
     
+    internal static void HandleUserConfigActionUnauthorizedRequest(ExceptionContext context, UserConfigUnauthorizedException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.Unauthorized,
+                Message: $"Unauthorized to access resource. {ex.Reason}",
+                Exceptions: [ex.Reason]
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.Unauthorized
+        };
+
+        context.Result = result;
+    }
+    
     internal static void HandleUserUnauthorizedRequest(ExceptionContext context, UserUnauthenticatedException ex)
     {
         JsonResult result = new JsonResult(

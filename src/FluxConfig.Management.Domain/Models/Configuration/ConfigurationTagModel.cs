@@ -1,12 +1,11 @@
 using FluxConfig.Management.Domain.Models.Enums;
 
-namespace FluxConfig.Management.Api.Contracts.Responses.Configurations.Tags;
+namespace FluxConfig.Management.Domain.Models.Configuration;
 
-public record GetConfigurationTagMetaResponse(
+public record ConfigurationTagModel(
     long Id,
     long ConfigurationId,
     string Tag,
     string Description,
-    string ConfigurationName,
     UserConfigRole RequiredRole
 );
