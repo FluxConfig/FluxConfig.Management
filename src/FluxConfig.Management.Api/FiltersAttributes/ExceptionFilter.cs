@@ -62,11 +62,11 @@ public class ExceptionFilter : IExceptionFilter
                 break;
             
             // ISC - FcStorage
-            case FcStorageInternalApiKeyUnauthenticatedException ex:
+            case FcStorageInternalApiKeyUnauthenticatedException:
                 ErrorRequestHandler.HandleInternalError(context);
                 break;
             
-            case FcStorageResponseException ex:
+            case FcStorageResponseException:
                 ErrorRequestHandler.HandleInternalError(context);
                 break;
             
