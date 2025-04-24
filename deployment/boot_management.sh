@@ -131,19 +131,19 @@ boot_script()
       if [ "$key" == "PG_USER" ] && [ -z "$value" ]; then
         echo ""
         echo "Generating value for PG_USER"
-        value=$(uuidgen)
+        value="u$(uuidgen | tr -d '-' | tr '[:upper:]' '[:lower:]')"
       fi
 
       if [ "$key" == "PG_PSWD" ] && [ -z "$value" ]; then
         echo ""
         echo "Generating value for PG_PSWD"
-        value=$(uuidgen)
+        value=$(uuidgen | tr -d '-' | tr '[:upper:]' '[:lower:]')
       fi
 
       if [ "$key" == "FC_API_KEY" ] && [ -z "$value" ]; then
         echo ""
         echo "Generating value for FC_API_KEY"
-        value=$(uuidgen)
+        value=$(uuidgen | tr -d '-' | tr '[:upper:]' '[:lower:]')
       fi
     
       printf "$key=$value\n" >> .env
@@ -153,21 +153,33 @@ boot_script()
   
   # Generating pg credentials for internal usage
   ########
-  declare -A postgres_vars=(
-    ["PG_FCM_APP_USER"]="Postgres FCM Application User"
-    ["PG_FCM_APP_PSWD"]="Postgres FCM Application Password" 
-    ["PG_MIGRATION_USER"]="Postgres Migration User"
-    ["PG_MIGRATION_PSWD"]="Postgres Migration Password"
-  )
+  postgres_users_vars=("PG_FCM_APP_USER" "PG_MIGRATION_USER")
+  pguv_descriptions=("FCM Application User" "FCM Application Password" "Migration User" "Migration Password")
+  postgres_pswd_vars=("PG_FCM_APP_PSWD" "PG_MIGRATION_PSWD")
+  pgpswd_descriptions=("FCM Application Password" "Migration Password")
   
-  for var in "${!postgres_vars[@]}"; do
+  # users
+  echo ""
+  for i in "${!postgres_users_vars[@]}"; do
+    var="${postgres_users_vars[$i]}"
+    desc="${pguv_descriptions[$i]}"
     if ! grep -q "^$var=" .env; then
-      echo ""
-      echo "Generating ${postgres_vars[$var]}"
-      value=$(uuidgen)
+      echo "Generating $desc"
+      value="u$(uuidgen | tr -d '-' | tr '[:upper:]' '[:lower:]')"
       echo "$var=$value" >> .env
     fi
   done
+  
+  #passwords
+  for i in "${!postgres_pswd_vars[@]}"; do
+      var="${postgres_pswd_vars[$i]}"
+      desc="${pgpswd_descriptions[$i]}"
+      if ! grep -q "^$var=" .env; then
+        echo "Generating $desc"
+        value=$(uuidgen | tr -d '-' | tr '[:upper:]' '[:lower:]')
+        echo "$var=$value" >> .env
+      fi
+    done
   ########
   
   # Booting

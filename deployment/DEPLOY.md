@@ -44,9 +44,9 @@ Please fill the configuration file and run this script again.
 |-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
 | **FC_TAG**              | Tag/version of the FluxConfig.Management image which will be used. <br> You can find all tags [here](https://hub.docker.com/r/fluxconfig/fluxconfig.management/tags)                                                                                                            | 1.0-pre                              |
 | **MANAGEMENT_API_PORT** | Port for api, which will be exposed from container                                                                                                                                                                                                                              | Any free port, e.g 7070              |
-| **FCWC_URL**            |                                                                                                                                                                                                                                                                                 | http://fcwebclient:3000              |
-| **FCS_BASE_URLL**       | URL to FluxConfig.Storage service secured with TLS                                                                                                                                                                                                                              | https://fcstorage:8080               |
-| **FC_API_KEY**          | Internal api-key for interservice communication. <br> If you don't have one, leave this argument empty and it will be generated for you. <br> Remember it for deployment the rest of the FluxConfig system. <br> If you already have one from other deployments - fill argument | 3CB73B25-8A67-497D-85C9-CA84DD5C7A79 |
+| **FCWC_URL**            | Address of FluxConfig.WebClient for CORS configuration                                                                                                                                                                                                                          | http://fcwebclient:3000              |
+| **FCS_BASE_URLL**       | Address of FluxConfig.Storage service secured with TLS                                                                                                                                                                                                                          | https://fcstorage:8080               |
+| **FC_API_KEY**          | Internal api-key for interservice communication. <br> If you don't have one, leave this argument empty and it will be generated for you. <br> Remember it for deployment the rest of the FluxConfig system. <br> If you already have one from other deployments - fill argument | e72eb4601d5a45bd9d5fd8b439b9097f |
 | **FCM_SYSADMIN_EMAIL**   | Email of the account that will be granted system administrator rights during system initialization. Can be changed after installation                                                                                                                                           | admin@gmail.com                      |
 | **FCM_SYSADMIN_USERNAME**  | Username of the account that will be granted system administrator rights during system initialization. Can be changed after installation                                                                                                                                        | FluxAdmin                            |
 | **FCM_SYSADMIN_PASSWORD**   | Password of the account that will be granted system administrator rights during system initialization. Can be changed after installation                                                                                                                                        | 12345678                             |
@@ -70,5 +70,35 @@ chmod +x boot_management.sh
 **Example of output for successful deployment**
 
 ```bash
-                                                                                                   0.3s 
+Fetching docker-compose.yml...
+docker-compose.yml successfully downloaded
+
+Reading .cfg file...
+Loaded: FC_TAG=1.0-pre
+Loaded: MANAGEMENT_API_PORT=7070
+Loaded: FCWC_URL=http://host.docker.internal:3000
+Loaded: FCS_BASE_URL=https://host.docker.internal:7045
+Loaded: FCM_SYSADMIN_EMAIL=admin@gmail.com
+Loaded: FCM_SYSADMIN_USERNAME=FluxAdmin
+Loaded: FCM_SYSADMIN_PASSWORD=12345
+Loaded: PG_USER=exampleuser
+Loaded: PG_PSWD=12345
+
+Generating value for FC_API_KEY
+Loaded: FC_API_KEY=e72eb4601d5a45bd9d5fd8b439b9097f
+
+Generating FCM Application User
+Generating FCM Application Password
+Generating FCM Application Password
+Generating Migration Password
+
+Starting FluxConfig Management...
+[+] Running 2/2
+ ✔ fcm_database Pulled
+ ✔ management_api Pulled 
+[+] Running 4/4
+ ✔ Network deployment_fcm-network   Created 
+ ✔ Volume "deployment_fcm-pg-data"  Created 
+ ✔ Container fc-postgres            Started 
+ ✔ Container fc-management          Started 
 ```
