@@ -87,10 +87,10 @@ Loaded: PG_PSWD=12345
 Generating value for FC_API_KEY
 Loaded: FC_API_KEY=e72eb4601d5a45bd9d5fd8b439b9097f
 
-Generating FCM Application User
-Generating FCM Application Password
-Generating FCM Application Password
-Generating Migration Password
+Generating Postgres FCM application User
+Generating Postgres migration User
+Generating Postgres FCM application Password
+Generating Postgres migration Password
 
 Starting FluxConfig Management...
 [+] Running 2/2

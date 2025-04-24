@@ -154,9 +154,9 @@ boot_script()
   # Generating pg credentials for internal usage
   ########
   postgres_users_vars=("PG_FCM_APP_USER" "PG_MIGRATION_USER")
-  pguv_descriptions=("FCM Application User" "FCM Application Password" "Migration User" "Migration Password")
+  pguv_descriptions=("Postgres FCM application User" "Postgres migration User")
   postgres_pswd_vars=("PG_FCM_APP_PSWD" "PG_MIGRATION_PSWD")
-  pgpswd_descriptions=("FCM Application Password" "Migration Password")
+  pgpswd_descriptions=("Postgres FCM application Password" "Postgres migration Password")
   
   # users
   echo ""

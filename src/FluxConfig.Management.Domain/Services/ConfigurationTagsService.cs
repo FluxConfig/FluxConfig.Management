@@ -135,15 +135,12 @@ public class ConfigurationTagsService : IConfigurationTagsService
         UserGlobalRole userRole,
         CancellationToken cancellationToken)
     {
-        using var transaction = _configurationTagsRepository.CreateTransactionScope();
 
         ConfigurationTagsViewEntity tagEntity = await _configurationTagsRepository.GetTagWithConfigurationByTagId(
             tagId: tagId,
             cancellationToken: cancellationToken
         );
-
-        transaction.Complete();
-
+        
         if (userRole != UserGlobalRole.Admin)
         {
             await _configurationUsersService.CheckUserConfigPermissions(
