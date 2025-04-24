@@ -1,0 +1,40 @@
+services:
+  management_api:
+    image: fluxconfig/fluxconfig.management:${FC_TAG}
+    container_name: fc-management
+    restart: always
+    env_file:
+      - ./.env
+    networks:
+      - fcm-network
+    ports:
+      - ${MANAGEMENT_API_PORT}:7070
+    depends_on:
+      - fcm_database
+  
+  fcm_database:
+    image: fluxconfig/fluxconfig.postgres:${FC_TAG}
+    container_name: fc-postgres
+    restart: always
+    shm_size: 128mb
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PSWD}
+      PG_FCM_APP_USER: ${PG_FCM_APP_USER}
+      PG_FCM_APP_PSWD: ${PG_FCM_APP_PSWD}
+      PG_MIGRATION_USER: ${PG_MIGRATION_USER}
+      PG_MIGRATION_PSWD: ${PG_MIGRATION_PSWD}
+    volumes:
+      - fcm-pg-data:/var/lib/postgresql/data
+    networks:
+      - fcm-network
+
+
+volumes:
+  fcm-pg-data:
+
+networks:
+  fcm-network:
+    driver: bridge

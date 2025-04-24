@@ -1,0 +1,53 @@
+services:
+  management_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TARGETARCH: ${BUILD_ARCH}
+    platform: ${BUILD_PLATFORM}
+    container_name: fc-management-dev
+    image: fluxconfig.management:dev
+    restart: always
+    env_file:
+      - ./.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # Dockerfile build optimization
+      - DOTNET_EnableWriteXorExecute=0
+      - DOTNET_NUGET_SIGNATURE_VERIFICATION=false
+    networks:
+      - fcm-network
+    ports:
+      - ${MANAGEMENT_API_PORT}:7070
+    depends_on:
+      - database
+    
+  database:
+    image: fluxconfig.postgres:dev
+    container_name: fc-postgres
+    restart: always
+    shm_size: 128mb
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PSWD}
+      PG_FCM_APP_USER: ${PG_FCM_APP_USER}
+      PG_FCM_APP_PSWD: ${PG_FCM_APP_PSWD}
+      PG_MIGRATION_USER: ${PG_MIGRATION_USER}
+      PG_MIGRATION_PSWD: ${PG_MIGRATION_PSWD}
+    volumes:
+      - fcm-pg-data:/var/lib/postgresql/data
+    networks:
+      - fcm-network
+    ports:
+      - ${PG_PORT}:5432
+    
+        
+volumes:
+  fcm-pg-data:
+
+networks:
+  fcm-network:
+    driver: bridge
