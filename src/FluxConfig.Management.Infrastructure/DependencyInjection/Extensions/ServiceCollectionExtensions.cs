@@ -82,10 +82,7 @@ public static class ServiceCollectionExtensions
         };
 
         services
-            .AddGrpcClient<Storage.StorageClient>(options =>
-            {
-                options.Address = new Uri(fluxConfigStorageAddress);
-            })
+            .AddGrpcClient<Storage.StorageClient>(options => { options.Address = new Uri(fluxConfigStorageAddress); })
             .AddCallCredentials((context, metadata) =>
             {
                 metadata.Add("X-API-KEY", fcInternalApiKey);
@@ -96,6 +93,13 @@ public static class ServiceCollectionExtensions
                 options.ServiceConfig = new ServiceConfig
                 {
                     MethodConfigs = { retryMethodConfig }
+                };
+
+
+                options.HttpHandler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
                 };
             });
 

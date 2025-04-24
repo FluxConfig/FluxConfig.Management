@@ -15,6 +15,23 @@ internal static class ErrorRequestHandler
 {
     # region Configuration
     
+    internal  static void HandleClientServiceApiKeyUnauthorizedBr(ExceptionContext context, ClientServiceApiKeyUnauthorizedException ex)
+    {
+        JsonResult result = new JsonResult(
+            new ErrorResponse(
+                StatusCode: HttpStatusCode.BadRequest,
+                Message: $"Configuration api key: {ex.ApiKey} could not be authenticated",
+                Exceptions: [ex.ApiKey]
+            )
+        )
+        {
+            ContentType = "application/json",
+            StatusCode = (int)HttpStatusCode.BadRequest
+        };
+
+        context.Result = result;
+    }
+    
     internal  static void HandleConfigurationTagAlEConflict(ExceptionContext context, ConfigurationTagAlreadyExistsException ex)
     {
         JsonResult result = new JsonResult(

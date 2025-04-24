@@ -29,6 +29,10 @@ public class ExceptionFilter : IExceptionFilter
         switch (context.Exception)
         {
             // Configuration
+            case ClientServiceApiKeyUnauthorizedException ex:
+                ErrorRequestHandler.HandleClientServiceApiKeyUnauthorizedBr(context, ex);
+                break;
+            
             case ConfigurationDataInvalidTypeException ex:
                 ErrorRequestHandler.HandleInvalidConfigurationTypeValueBr(context, ex);
                 break;

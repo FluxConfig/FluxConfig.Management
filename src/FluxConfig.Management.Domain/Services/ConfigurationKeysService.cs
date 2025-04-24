@@ -102,7 +102,8 @@ public class ConfigurationKeysService : IConfigurationKeysService
 
         transaction.Complete();
 
-        return configKeysEntities.MapEntitiesToModelsEnumerable().Where(m => m.RolePermission <= role).OrderBy(m => m.ExpirationDate).ToList();
+        return configKeysEntities.MapEntitiesToModelsEnumerable().Where(m => m.RolePermission <= role)
+            .OrderBy(m => m.ExpirationDate).ToList();
     }
 
     public async Task<string> AuthenticateClientService(string apiKey, string configurationTag,
@@ -114,9 +115,9 @@ public class ConfigurationKeysService : IConfigurationKeysService
         }
         catch (EntityNotFoundException ex)
         {
-            throw new ConfigurationKeyNotFoundException(
-                message: $"Configuration key with id: {apiKey} could not be authenticated.",
-                keyId: apiKey,
+            throw new ClientServiceApiKeyUnauthorizedException(
+                message: $"Configuration api key: {apiKey} could not be authenticated.",
+                apiKey: apiKey,
                 innerException: ex
             );
         }
@@ -133,17 +134,31 @@ public class ConfigurationKeysService : IConfigurationKeysService
             cancellationToken: cancellationToken
         );
 
-        ConfigurationTagsViewEntity tagsViewEntity =
-            await _configurationTagsRepository.GetTagWithConfigurationByConfigId(
+        ConfigurationTagsViewEntity tagsViewEntity;
+        try
+        {
+            tagsViewEntity = await _configurationTagsRepository.GetTagWithConfigurationByConfigId(
                 configurationId: keyEntity.ConfigurationId,
                 tag: configurationTag,
                 cancellationToken: cancellationToken
             );
-
-
+        }
+        catch (EntityNotFoundException ex)
+        {
+            throw new ConfigurationTagNotFoundException(
+                message:
+                $"Configuration tag: {configurationTag} for configurationWith id: {keyEntity.ConfigurationId} couldn't be found.",
+                tagId: 0,
+                innerException: ex
+            );
+        }
+        
         if (keyEntity.RolePermission < tagsViewEntity.RequiredRole)
         {
-            throw new EntityNotFoundException($"Configuration key with id: {apiKey} could not be authenticated.");
+            throw new ClientServiceApiKeyUnauthorizedException(
+                message: $"Configuration api key: {apiKey} could not be authenticated.",
+                apiKey: apiKey
+            );
         }
 
         transaction.Complete();

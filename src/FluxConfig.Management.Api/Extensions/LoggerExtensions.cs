@@ -205,7 +205,16 @@ internal static partial class LoggerExtensions
         string value,
         string type);
     
-
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        EventId = 4030,
+        Message = "[{CallId}] [{CurTime}] Configuration api key: {ApiKey} could not be authenticated or authorized to access resource."
+    )]
+    public static partial void LogClientServiceApiKeyUnauthorizedError(this ILogger logger,
+        string callId,
+        DateTime curTime,
+        string apiKey);
+    
     #endregion
     
     #region Debug

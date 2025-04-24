@@ -20,6 +20,7 @@ public class ConfigurationAuthController : ControllerBase
     [HttpGet]
     [Route("auth")]
     [ProducesResponseType<ClientServiceAuthResponse>(200)]
+    [ErrorResponseType(400)]
     [ErrorResponseType(401)]
     [ErrorResponseType(404)]
     public async Task<IActionResult> AuthClientService([FromQuery] ClientServiceAuthRequest request,

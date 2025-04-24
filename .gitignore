@@ -499,3 +499,4 @@ $RECYCLE.BIN/
 
 # Custom
 /postgres-init-dev/*.sql
+deployment/management.test.cfg

@@ -17,6 +17,14 @@ internal static class ExceptionLoggerExtensions
         switch (exception)
         {
             // Configuration
+            case ClientServiceApiKeyUnauthorizedException ex:
+                logger.LogClientServiceApiKeyUnauthorizedError(
+                    callId: callId,
+                    curTime: curTime,
+                    apiKey: ex.ApiKey
+                );
+                break;
+
             case ConfigurationDataInvalidTypeException ex:
                 logger.LogInvalidConfigurationValueForTypeError(
                     callId: callId,
