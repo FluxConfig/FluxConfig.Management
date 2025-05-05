@@ -1,4 +1,4 @@
-name: "Publish FCM PG image CD"
+name: "Publish FCM images CD"
 
 on:
   release:
@@ -6,15 +6,24 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: fluxconfig/fluxconfig.postgres
 
 jobs:
-  publish_fcm_pg_image:
+  publish_fcm_image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-        
+    
+    strategy:
+      matrix:
+        include:
+          - build_context: .
+            build_dockerfile_path: ./Dockerfile
+            build_image_name: fluxconfig/fluxconfig.management
+          - build_context: postgres_image
+            build_dockerfile_path: postgres_image/Dockerfile
+            build_image_name: fluxconfig/fluxconfig.postgres
+    
     if: startsWith(github.event.release.tag_name, 'v')
     
     steps:
@@ -43,13 +52,11 @@ jobs:
       - name: Build and publish image
         uses: docker/build-push-action@v6
         with:
-          context: postgres_image
-          file: postgres_image/Dockerfile
+          context: ${{ matrix.build_context }}
+          file: ${{ matrix.build_dockerfile_path }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.extract_version.outputs.version }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          build-args: |
-            POSTGRES_VERSION=17.4
+            ${{ env.REGISTRY }}/${{ matrix.build_image_name }}:${{ steps.extract_version.outputs.version }}
+            ${{ env.REGISTRY }}/${{ matrix.build_image_name }}:latest
           
