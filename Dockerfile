@@ -1,6 +1,3 @@
-FROM --platform=${BUILDPLATFORM} mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-
 FROM --platform=${BUILDPLATFORM} mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG TARGETARCH
 WORKDIR /src
@@ -11,13 +8,9 @@ COPY ["src/FluxConfig.Management.Api/FluxConfig.Management.Api.csproj", "FluxCon
 
 RUN dotnet restore "FluxConfig.Management.Api/FluxConfig.Management.Api.csproj" --arch ${TARGETARCH}
 COPY src/. .
-RUN dotnet build "FluxConfig.Management.Api/FluxConfig.Management.Api.csproj" -c Release -o /app/build
+RUN dotnet publish "FluxConfig.Management.Api/FluxConfig.Management.Api.csproj" --arch ${TARGETARCH} -c Release --no-restore -o /app
 
-WORKDIR "/src/FluxConfig.Management.Api"
-FROM build AS publish
-RUN dotnet publish "FluxConfig.Management.Api.csproj" --arch ${TARGETARCH}  -c Release -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app .
 ENTRYPOINT ["dotnet", "FluxConfig.Management.Api.dll"]
